@@ -33,52 +33,93 @@ fun DashboardScreen(
     onCreateAppointment: () -> Unit,
     onOpenPremium: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenFinance: () -> Unit,
+    onOpenStaff: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    Column(
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column {
-                Text("Início", style = MaterialTheme.typography.headlineSmall)
-                Text("Resumo do seu dia", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            IconButton(onClick = onOpenSettings) {
-                Icon(Icons.Outlined.Settings, contentDescription = "Configurações")
-            }
-        }
-        Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("Faturamento hoje", style = MaterialTheme.typography.labelLarge)
-                Text(MoneyUtils.format(state.revenueTodayCents), style = MaterialTheme.typography.headlineSmall)
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column {
+                    Text("AgendaPro Beauty", style = MaterialTheme.typography.headlineSmall)
+                    Text("Empresa, equipe, clientes e agenda", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                IconButton(onClick = onOpenSettings) {
+                    Icon(Icons.Outlined.Settings, contentDescription = "Configurações")
+                }
             }
         }
-        Text(
-            "Agendamentos este mês: ${state.planStatus.currentMonthAppointments}/${state.planStatus.freeMonthlyLimit}",
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Button(onClick = onCreateAppointment, modifier = Modifier.fillMaxWidth()) {
-            Text("Novo agendamento")
+        item {
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text("Painel da empresa", style = MaterialTheme.typography.labelLarge)
+                    Text(MoneyUtils.format(state.revenueTodayCents), style = MaterialTheme.typography.headlineMedium)
+                    Text("Faturamento de hoje", color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Text(
+                        "Plano grátis: ${state.planStatus.currentMonthAppointments}/${state.planStatus.freeMonthlyLimit} agendamentos no mês",
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+                }
+            }
         }
-        OutlinedButton(onClick = onOpenPremium, modifier = Modifier.fillMaxWidth()) {
-            Text("Ver plano premium")
+        item {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Button(onClick = onCreateAppointment, modifier = Modifier.weight(1f)) {
+                    Text("Agendar")
+                }
+                OutlinedButton(onClick = onOpenStaff, modifier = Modifier.weight(1f)) {
+                    Text("Equipe")
+                }
+            }
         }
-        Text("Próximos atendimentos", style = MaterialTheme.typography.titleMedium)
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        item {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                OutlinedButton(onClick = onOpenFinance, modifier = Modifier.weight(1f)) {
+                    Text("Financeiro")
+                }
+                OutlinedButton(onClick = onOpenPremium, modifier = Modifier.weight(1f)) {
+                    Text("Premium")
+                }
+            }
+        }
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("Atendimentos de hoje", style = MaterialTheme.typography.titleMedium)
+                Text("Aqui aparecem os clientes agendados por profissional.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        if (state.todayAppointments.isEmpty()) {
+            item {
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text("Nenhum atendimento hoje", style = MaterialTheme.typography.titleMedium)
+                        Text("Crie um agendamento escolhendo profissional, cliente, serviço e horário.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            }
+        } else {
             items(state.todayAppointments.take(5), key = { it.id }) { appointment ->
                 Card {
-                    Column(Modifier.padding(12.dp)) {
-                        Text("${DateUtils.formatTime(appointment.startAt)} - ${appointment.clientNameSnapshot}")
-                        Text(appointment.serviceNameSnapshot, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text("${DateUtils.formatTime(appointment.startAt)} · ${appointment.clientNameSnapshot}", style = MaterialTheme.typography.titleMedium)
+                        Text("Profissional: ${appointment.staffMemberNameSnapshot}", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Serviço: ${appointment.serviceNameSnapshot}", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }

@@ -10,6 +10,7 @@ import com.agendaprobeauty.app.data.repository.FinanceRepositoryImpl
 import com.agendaprobeauty.app.data.repository.ProfessionalRepositoryImpl
 import com.agendaprobeauty.app.data.repository.ServiceRepositoryImpl
 import com.agendaprobeauty.app.data.repository.SettingsRepositoryImpl
+import com.agendaprobeauty.app.data.repository.StaffRepositoryImpl
 import com.agendaprobeauty.app.data.repository.SubscriptionRepositoryImpl
 import com.agendaprobeauty.app.domain.repository.AppointmentRepository
 import com.agendaprobeauty.app.domain.repository.ClientRepository
@@ -17,6 +18,7 @@ import com.agendaprobeauty.app.domain.repository.FinanceRepository
 import com.agendaprobeauty.app.domain.repository.ProfessionalRepository
 import com.agendaprobeauty.app.domain.repository.ServiceRepository
 import com.agendaprobeauty.app.domain.repository.SettingsRepository
+import com.agendaprobeauty.app.domain.repository.StaffRepository
 import com.agendaprobeauty.app.domain.repository.SubscriptionRepository
 import com.agendaprobeauty.app.domain.usecase.appointment.CanCreateAppointmentUseCase
 import com.agendaprobeauty.app.domain.usecase.appointment.CancelAppointmentUseCase
@@ -35,6 +37,9 @@ import com.agendaprobeauty.app.domain.usecase.service.CreateServiceUseCase
 import com.agendaprobeauty.app.domain.usecase.service.DeactivateServiceUseCase
 import com.agendaprobeauty.app.domain.usecase.service.GetActiveServicesUseCase
 import com.agendaprobeauty.app.domain.usecase.service.GetAllServicesUseCase
+import com.agendaprobeauty.app.domain.usecase.staff.CreateStaffMemberUseCase
+import com.agendaprobeauty.app.domain.usecase.staff.DeactivateStaffMemberUseCase
+import com.agendaprobeauty.app.domain.usecase.staff.GetActiveStaffUseCase
 import com.agendaprobeauty.app.domain.usecase.subscription.GetCurrentPlanUseCase
 
 class AppContainer(
@@ -44,20 +49,27 @@ class AppContainer(
         context.applicationContext,
         AppDatabase::class.java,
         "agenda_pro_beauty.db",
-    ).build()
+    )
+        .fallbackToDestructiveMigration(dropAllTables = true)
+        .build()
 
     private val settingsDataStore = SettingsDataStore(context.applicationContext)
 
     val professionalRepository: ProfessionalRepository = ProfessionalRepositoryImpl(database.professionalDao())
     val clientRepository: ClientRepository = ClientRepositoryImpl(database.clientDao())
     val serviceRepository: ServiceRepository = ServiceRepositoryImpl(database.serviceDao())
+    val staffRepository: StaffRepository = StaffRepositoryImpl(database.staffDao())
     val appointmentRepository: AppointmentRepository = AppointmentRepositoryImpl(database.appointmentDao())
     val financeRepository: FinanceRepository = FinanceRepositoryImpl(database.financialDao())
     val settingsRepository: SettingsRepository = SettingsRepositoryImpl(settingsDataStore)
     val subscriptionRepository: SubscriptionRepository = SubscriptionRepositoryImpl(settingsRepository, appointmentRepository)
 
+    val getActiveStaff = GetActiveStaffUseCase(staffRepository)
+    val createStaffMember = CreateStaffMemberUseCase(staffRepository)
+    val deactivateStaffMember = DeactivateStaffMemberUseCase(staffRepository)
+
     val getProfessionalProfile = GetProfessionalProfileUseCase(professionalRepository)
-    val saveProfessionalProfile = SaveProfessionalProfileUseCase(professionalRepository, settingsRepository)
+    val saveProfessionalProfile = SaveProfessionalProfileUseCase(professionalRepository, settingsRepository, createStaffMember)
 
     val searchClients = SearchClientsUseCase(clientRepository)
     val createClient = CreateClientUseCase(clientRepository)

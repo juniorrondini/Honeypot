@@ -5,11 +5,13 @@ import com.agendaprobeauty.app.data.local.entity.ClientEntity
 import com.agendaprobeauty.app.data.local.entity.FinancialEntryEntity
 import com.agendaprobeauty.app.data.local.entity.ProfessionalEntity
 import com.agendaprobeauty.app.data.local.entity.ServiceEntity
+import com.agendaprobeauty.app.data.local.entity.StaffMemberEntity
 import com.agendaprobeauty.app.domain.model.Appointment
 import com.agendaprobeauty.app.domain.model.BeautyService
 import com.agendaprobeauty.app.domain.model.Client
 import com.agendaprobeauty.app.domain.model.FinancialEntry
 import com.agendaprobeauty.app.domain.model.Professional
+import com.agendaprobeauty.app.domain.model.StaffMember
 
 fun ProfessionalEntity.toDomain() = Professional(id, name, businessName, phone, profession, createdAt)
 fun Professional.toEntity() = ProfessionalEntity(id, name, businessName, phone, profession, createdAt)
@@ -20,8 +22,34 @@ fun Client.toEntity() = ClientEntity(id, name, phone, notes, createdAt, updatedA
 fun ServiceEntity.toDomain() = BeautyService(id, name, priceCents, durationMinutes, isActive, createdAt)
 fun BeautyService.toEntity() = ServiceEntity(id, name, priceCents, durationMinutes, isActive, createdAt)
 
+fun StaffMemberEntity.toDomain() = StaffMember(
+    id = id,
+    name = name,
+    role = role,
+    phone = phone,
+    workStartHour = workStartHour,
+    workEndHour = workEndHour,
+    slotMinutes = slotMinutes,
+    isActive = isActive,
+    createdAt = createdAt,
+)
+
+fun StaffMember.toEntity() = StaffMemberEntity(
+    id = id,
+    name = name,
+    role = role,
+    phone = phone,
+    workStartHour = workStartHour,
+    workEndHour = workEndHour,
+    slotMinutes = slotMinutes,
+    isActive = isActive,
+    createdAt = createdAt,
+)
+
 fun AppointmentEntity.toDomain() = Appointment(
     id = id,
+    staffMemberId = staffMemberId,
+    staffMemberNameSnapshot = staffMemberNameSnapshot,
     clientId = clientId,
     serviceId = serviceId,
     clientNameSnapshot = clientNameSnapshot,
@@ -38,6 +66,8 @@ fun AppointmentEntity.toDomain() = Appointment(
 
 fun Appointment.toEntity() = AppointmentEntity(
     id = id,
+    staffMemberId = staffMemberId,
+    staffMemberNameSnapshot = staffMemberNameSnapshot,
     clientId = clientId,
     serviceId = serviceId,
     clientNameSnapshot = clientNameSnapshot,

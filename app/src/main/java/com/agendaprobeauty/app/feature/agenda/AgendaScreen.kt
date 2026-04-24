@@ -2,6 +2,8 @@ package com.agendaprobeauty.app.feature.agenda
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -23,6 +27,7 @@ import com.agendaprobeauty.app.core.util.DateUtils
 import com.agendaprobeauty.app.core.util.MoneyUtils
 
 @Composable
+@OptIn(ExperimentalLayoutApi::class)
 fun AgendaScreen(
     viewModel: AgendaViewModel,
     onCreateAppointment: () -> Unit,
@@ -37,6 +42,26 @@ fun AgendaScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text("Agenda", style = MaterialTheme.typography.headlineSmall)
+        Text("Escolha o profissional para ver agenda e horários livres.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (state.staff.isEmpty()) {
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
+                Text(
+                    "Cadastre pelo menos um profissional em Equipe para usar a agenda.",
+                    modifier = Modifier.padding(14.dp),
+                    color = MaterialTheme.colorScheme.onErrorContainer,
+                )
+            }
+        } else {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                state.staff.forEach { member ->
+                    FilterChip(
+                        selected = state.selectedStaffMemberId == member.id,
+                        onClick = { viewModel.selectStaff(member.id) },
+                        label = { Text(member.name) },
+                    )
+                }
+            }
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -49,11 +74,24 @@ fun AgendaScreen(
         Button(onClick = onCreateAppointment, modifier = Modifier.fillMaxWidth()) {
             Text("Criar agendamento")
         }
+        if (state.availableSlots.isNotEmpty()) {
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)) {
+                Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Horários disponíveis", style = MaterialTheme.typography.titleMedium)
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        state.availableSlots.take(12).forEach { slot ->
+                            FilterChip(selected = false, onClick = {}, label = { Text(slot) })
+                        }
+                    }
+                }
+            }
+        }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(state.appointments, key = { it.id }) { appointment ->
                 Card {
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text("${DateUtils.formatTime(appointment.startAt)} - ${appointment.clientNameSnapshot}")
+                        Text("Profissional: ${appointment.staffMemberNameSnapshot}", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text("${appointment.serviceNameSnapshot} · ${MoneyUtils.format(appointment.priceCents)}")
                         Text("Status: ${appointment.status}", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

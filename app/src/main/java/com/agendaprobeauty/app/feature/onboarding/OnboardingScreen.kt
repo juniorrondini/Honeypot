@@ -37,19 +37,19 @@ fun OnboardingScreen(
     ) {
         Text("AgendaPro Beauty", style = MaterialTheme.typography.headlineMedium)
         Text(
-            "Configure o perfil profissional para começar a controlar agenda, clientes e faturamento.",
+            "Configure a empresa e o primeiro profissional da equipe.",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         OutlinedTextField(
             value = state.name,
             onValueChange = viewModel::updateName,
-            label = { Text("Seu nome") },
+            label = { Text("Nome do primeiro profissional") },
             modifier = Modifier.fillMaxWidth(),
         )
         OutlinedTextField(
             value = state.businessName,
             onValueChange = viewModel::updateBusinessName,
-            label = { Text("Nome do negócio") },
+            label = { Text("Nome da empresa ou salão") },
             modifier = Modifier.fillMaxWidth(),
         )
         OutlinedTextField(
@@ -61,7 +61,7 @@ fun OnboardingScreen(
         OutlinedTextField(
             value = state.profession,
             onValueChange = viewModel::updateProfession,
-            label = { Text("Profissão") },
+            label = { Text("Função do profissional") },
             modifier = Modifier.fillMaxWidth(),
         )
         Button(

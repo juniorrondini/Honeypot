@@ -9,4 +9,7 @@ class GetDailyAppointmentsUseCase(
 ) {
     operator fun invoke(date: LocalDate) =
         repository.observeAppointmentsBetween(DateUtils.startOfDay(date), DateUtils.endOfDay(date))
+
+    fun forStaff(staffMemberId: Long?, date: LocalDate) =
+        repository.observeAppointmentsBetweenForStaff(staffMemberId, DateUtils.startOfDay(date), DateUtils.endOfDay(date))
 }

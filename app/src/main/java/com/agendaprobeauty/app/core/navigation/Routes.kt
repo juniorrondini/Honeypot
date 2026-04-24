@@ -7,6 +7,7 @@ object Routes {
     const val APPOINTMENT_FORM = "appointment-form"
     const val CLIENTS = "clients"
     const val SERVICES = "services"
+    const val STAFF = "staff"
     const val FINANCE = "finance"
     const val SETTINGS = "settings"
     const val PREMIUM = "premium"

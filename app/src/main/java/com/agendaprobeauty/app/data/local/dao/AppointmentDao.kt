@@ -13,6 +13,9 @@ interface AppointmentDao {
     @Query("SELECT * FROM appointments WHERE startAt >= :startAt AND startAt < :endAt ORDER BY startAt ASC")
     fun observeBetween(startAt: Long, endAt: Long): Flow<List<AppointmentEntity>>
 
+    @Query("SELECT * FROM appointments WHERE (:staffMemberId IS NULL OR staffMemberId = :staffMemberId) AND startAt >= :startAt AND startAt < :endAt ORDER BY startAt ASC")
+    fun observeBetweenForStaff(staffMemberId: Long?, startAt: Long, endAt: Long): Flow<List<AppointmentEntity>>
+
     @Query("SELECT * FROM appointments WHERE id = :id")
     fun observeById(id: Long): Flow<AppointmentEntity?>
 

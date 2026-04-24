@@ -34,6 +34,7 @@ fun ClientsScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("Clientes", style = MaterialTheme.typography.headlineSmall)
+        Text("Clientes são as pessoas atendidas pelos profissionais da empresa.", color = MaterialTheme.colorScheme.onSurfaceVariant)
         OutlinedTextField(
             value = state.query,
             onValueChange = viewModel::updateQuery,

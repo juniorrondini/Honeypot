@@ -5,7 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Payments
+import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.RoomService
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -40,6 +40,8 @@ import com.agendaprobeauty.app.feature.services.ServicesScreen
 import com.agendaprobeauty.app.feature.services.ServicesViewModel
 import com.agendaprobeauty.app.feature.settings.SettingsScreen
 import com.agendaprobeauty.app.feature.settings.SettingsViewModel
+import com.agendaprobeauty.app.feature.staff.StaffScreen
+import com.agendaprobeauty.app.feature.staff.StaffViewModel
 
 private data class BottomDestination(
     val route: String,
@@ -52,7 +54,7 @@ private val bottomDestinations = listOf(
     BottomDestination(Routes.AGENDA, "Agenda") { Icon(Icons.Outlined.CalendarToday, contentDescription = null) },
     BottomDestination(Routes.CLIENTS, "Clientes") { Icon(Icons.Outlined.Groups, contentDescription = null) },
     BottomDestination(Routes.SERVICES, "Serviços") { Icon(Icons.Outlined.RoomService, contentDescription = null) },
-    BottomDestination(Routes.FINANCE, "Financeiro") { Icon(Icons.Outlined.Payments, contentDescription = null) },
+    BottomDestination(Routes.STAFF, "Equipe") { Icon(Icons.Outlined.Badge, contentDescription = null) },
 )
 
 @Composable
@@ -125,6 +127,8 @@ fun AppNavHost(
                     onCreateAppointment = { navController.navigate(Routes.APPOINTMENT_FORM) },
                     onOpenPremium = { navController.navigate(Routes.PREMIUM) },
                     onOpenSettings = { navController.navigate(Routes.SETTINGS) },
+                    onOpenFinance = { navController.navigate(Routes.FINANCE) },
+                    onOpenStaff = { navController.navigate(Routes.STAFF) },
                 )
             }
             composable(Routes.AGENDA) {
@@ -132,6 +136,7 @@ fun AppNavHost(
                     factory = viewModelFactory {
                         AgendaViewModel(
                             appContainer.getDailyAppointments,
+                            appContainer.getActiveStaff,
                             appContainer.cancelAppointment,
                             appContainer.completeAppointment,
                         )
@@ -141,7 +146,7 @@ fun AppNavHost(
             }
             composable(Routes.APPOINTMENT_FORM) {
                 val viewModel: AppointmentFormViewModel = viewModel(
-                    factory = viewModelFactory { AppointmentFormViewModel(appContainer.createAppointment) },
+                    factory = viewModelFactory { AppointmentFormViewModel(appContainer.createAppointment, appContainer.getActiveStaff) },
                 )
                 AppointmentFormScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
             }
@@ -160,6 +165,14 @@ fun AppNavHost(
                     },
                 )
                 ServicesScreen(viewModel = viewModel)
+            }
+            composable(Routes.STAFF) {
+                val viewModel: StaffViewModel = viewModel(
+                    factory = viewModelFactory {
+                        StaffViewModel(appContainer.getActiveStaff, appContainer.createStaffMember, appContainer.deactivateStaffMember)
+                    },
+                )
+                StaffScreen(viewModel = viewModel)
             }
             composable(Routes.FINANCE) {
                 val viewModel: FinanceViewModel = viewModel(

@@ -2,6 +2,13 @@
 
 Aplicativo Android nativo em Kotlin para agenda, clientes, serviços e financeiro simples de profissionais autônomos de beleza.
 
+Modelo de produto:
+
+- `Empresa`: salão, barbearia, studio ou profissional autônomo com marca própria.
+- `Equipe`: profissionais que atendem dentro da empresa.
+- `Clientes`: pessoas atendidas pelos profissionais.
+- `Agenda`: sempre pode ser filtrada por profissional para mostrar horários livres.
+
 Stack:
 
 - Kotlin

@@ -12,6 +12,8 @@ class CreateAppointmentUseCase(
 ) {
     suspend operator fun invoke(
         clientId: Long?,
+        staffMemberId: Long?,
+        staffMemberName: String,
         serviceId: Long?,
         clientName: String,
         serviceName: String,
@@ -27,6 +29,8 @@ class CreateAppointmentUseCase(
         val endAt = startAt + durationMinutes * 60_000L
         val id = appointmentRepository.saveAppointment(
             Appointment(
+                staffMemberId = staffMemberId,
+                staffMemberNameSnapshot = staffMemberName.trim(),
                 clientId = clientId,
                 serviceId = serviceId,
                 clientNameSnapshot = clientName.trim(),

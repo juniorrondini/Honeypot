@@ -16,6 +16,8 @@ import com.agendaprobeauty.app.domain.model.AppointmentStatus
 )
 data class AppointmentEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
+    val staffMemberId: Long?,
+    val staffMemberNameSnapshot: String,
     val clientId: Long?,
     val serviceId: Long?,
     val clientNameSnapshot: String,
