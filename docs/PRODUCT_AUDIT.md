@@ -303,3 +303,14 @@ Depois desta auditoria, o fluxo de agendamento foi evoluido para:
 - mostrar horarios livres do profissional na data selecionada;
 - remover horarios ocupados da lista;
 - bloquear conflito de horario no dominio antes de salvar.
+
+## Atualizacao De Agenda
+
+A agenda tambem foi evoluida para:
+
+- exibir uma timeline por horario;
+- mostrar slots livres e ocupados;
+- destacar status do atendimento;
+- exibir resumo do dia por profissional;
+- permitir editar/reagendar um atendimento existente;
+- permitir concluir ou cancelar direto pela agenda.

@@ -26,8 +26,17 @@ data class AgendaUiState(
     val selectedDate: LocalDate = DateUtils.today(),
     val staff: List<StaffMember> = emptyList(),
     val selectedStaffMemberId: Long? = null,
+    val selectedStaff: StaffMember? = null,
     val appointments: List<Appointment> = emptyList(),
-    val availableSlots: List<String> = emptyList(),
+    val timeline: List<AgendaTimelineItem> = emptyList(),
+    val scheduledCount: Int = 0,
+    val completedCount: Int = 0,
+    val canceledCount: Int = 0,
+)
+
+data class AgendaTimelineItem(
+    val time: String,
+    val appointment: Appointment?,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -47,12 +56,17 @@ class AgendaViewModel(
         Triple(date, effectiveStaffId, staff)
     }.flatMapLatest { (date, staffId, staff) ->
         getDailyAppointments.forStaff(staffId, date).map { appointments ->
+            val selectedStaff = staff.firstOrNull { it.id == staffId }
             AgendaUiState(
                 selectedDate = date,
                 staff = staff,
                 selectedStaffMemberId = staffId,
+                selectedStaff = selectedStaff,
                 appointments = appointments,
-                availableSlots = buildAvailableSlots(staff.firstOrNull { it.id == staffId }, appointments),
+                timeline = buildTimeline(selectedStaff, appointments),
+                scheduledCount = appointments.count { it.status == AppointmentStatus.SCHEDULED },
+                completedCount = appointments.count { it.status == AppointmentStatus.COMPLETED },
+                canceledCount = appointments.count { it.status == AppointmentStatus.CANCELED || it.status == AppointmentStatus.NO_SHOW },
             )
         }
             }
@@ -78,20 +92,20 @@ class AgendaViewModel(
         viewModelScope.launch { completeAppointment(id) }
     }
 
-    private fun buildAvailableSlots(member: StaffMember?, appointments: List<Appointment>): List<String> {
+    private fun buildTimeline(member: StaffMember?, appointments: List<Appointment>): List<AgendaTimelineItem> {
         if (member == null) return emptyList()
-        val busyStarts = appointments
-            .filter { it.status != AppointmentStatus.CANCELED && it.status != AppointmentStatus.NO_SHOW }
-            .map { DateUtils.formatTime(it.startAt) }
-            .toSet()
-        val slots = mutableListOf<String>()
+        val appointmentsByStart = appointments.associateBy { DateUtils.formatTime(it.startAt) }
+        val items = mutableListOf<AgendaTimelineItem>()
         var time = LocalTime.of(member.workStartHour, 0)
         val end = LocalTime.of(member.workEndHour, 0)
         while (time.isBefore(end)) {
             val label = time.toString()
-            if (label !in busyStarts) slots += label
+            items += AgendaTimelineItem(
+                time = label,
+                appointment = appointmentsByStart[label],
+            )
             time = time.plusMinutes(member.slotMinutes.toLong())
         }
-        return slots
+        return items
     }
 }

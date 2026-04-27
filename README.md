@@ -56,7 +56,9 @@ Essa separacao evita confusao entre "quem e a empresa", "quem atende" e "quem e 
 - Agenda diaria.
 - Filtro da agenda por profissional.
 - Visualizacao de horarios disponiveis por profissional.
+- Timeline visual da agenda por horario.
 - Criacao de agendamento com profissional, cliente cadastrado, servico cadastrado, data e horario livre.
+- Edicao e reagendamento basico de atendimentos.
 - Bloqueio de conflito de horario por profissional.
 - Cancelamento e conclusao de agendamentos.
 - Lancamento automatico de receita ao concluir atendimento.
@@ -224,8 +226,7 @@ E:\Android\Sdk\platform-tools\adb.exe shell monkey -p com.agendaprobeauty.app -c
 
 ## Roadmap
 
-- Melhorar edicao e reagendamento de atendimentos.
-- Editar agendamentos.
+- Melhorar detalhes de atendimento e historico do cliente.
 - Historico por cliente.
 - Relatorios financeiros por periodo.
 - Tela premium com bloqueios reais.

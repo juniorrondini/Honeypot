@@ -19,6 +19,9 @@ interface AppointmentDao {
     @Query("SELECT * FROM appointments WHERE id = :id")
     fun observeById(id: Long): Flow<AppointmentEntity?>
 
+    @Query("SELECT * FROM appointments WHERE id = :id")
+    suspend fun getById(id: Long): AppointmentEntity?
+
     @Query("SELECT COUNT(*) FROM appointments WHERE startAt >= :startAt AND startAt < :endAt")
     suspend fun countBetween(startAt: Long, endAt: Long): Int
 

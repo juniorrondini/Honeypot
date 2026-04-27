@@ -25,6 +25,8 @@ import com.agendaprobeauty.app.domain.usecase.appointment.CancelAppointmentUseCa
 import com.agendaprobeauty.app.domain.usecase.appointment.CompleteAppointmentUseCase
 import com.agendaprobeauty.app.domain.usecase.appointment.CreateAppointmentUseCase
 import com.agendaprobeauty.app.domain.usecase.appointment.GetDailyAppointmentsUseCase
+import com.agendaprobeauty.app.domain.usecase.appointment.GetAppointmentUseCase
+import com.agendaprobeauty.app.domain.usecase.appointment.UpdateAppointmentUseCase
 import com.agendaprobeauty.app.domain.usecase.client.CreateClientUseCase
 import com.agendaprobeauty.app.domain.usecase.client.DeleteClientUseCase
 import com.agendaprobeauty.app.domain.usecase.client.SearchClientsUseCase
@@ -81,7 +83,9 @@ class AppContainer(
     val deactivateService = DeactivateServiceUseCase(serviceRepository)
 
     val getDailyAppointments = GetDailyAppointmentsUseCase(appointmentRepository)
+    val getAppointment = GetAppointmentUseCase(appointmentRepository)
     val createAppointment = CreateAppointmentUseCase(appointmentRepository, subscriptionRepository)
+    val updateAppointment = UpdateAppointmentUseCase(appointmentRepository)
     val cancelAppointment = CancelAppointmentUseCase(appointmentRepository)
     val completeAppointment = CompleteAppointmentUseCase(appointmentRepository, financeRepository)
     val canCreateAppointment = CanCreateAppointmentUseCase(subscriptionRepository)

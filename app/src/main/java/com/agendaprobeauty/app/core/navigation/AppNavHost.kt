@@ -25,6 +25,8 @@ import com.agendaprobeauty.app.core.di.AppContainer
 import com.agendaprobeauty.app.core.di.viewModelFactory
 import com.agendaprobeauty.app.feature.agenda.AgendaScreen
 import com.agendaprobeauty.app.feature.agenda.AgendaViewModel
+import com.agendaprobeauty.app.feature.appointmentedit.AppointmentEditScreen
+import com.agendaprobeauty.app.feature.appointmentedit.AppointmentEditViewModel
 import com.agendaprobeauty.app.feature.appointmentform.AppointmentFormScreen
 import com.agendaprobeauty.app.feature.appointmentform.AppointmentFormViewModel
 import com.agendaprobeauty.app.feature.clients.ClientsScreen
@@ -142,7 +144,24 @@ fun AppNavHost(
                         )
                     },
                 )
-                AgendaScreen(viewModel = viewModel, onCreateAppointment = { navController.navigate(Routes.APPOINTMENT_FORM) })
+                AgendaScreen(
+                    viewModel = viewModel,
+                    onCreateAppointment = { navController.navigate(Routes.APPOINTMENT_FORM) },
+                    onEditAppointment = { id -> navController.navigate("${Routes.APPOINTMENT_EDIT}/$id") },
+                )
+            }
+            composable("${Routes.APPOINTMENT_EDIT}/{appointmentId}") { entry ->
+                val appointmentId = entry.arguments?.getString("appointmentId")?.toLongOrNull() ?: 0L
+                val viewModel: AppointmentEditViewModel = viewModel(
+                    factory = viewModelFactory {
+                        AppointmentEditViewModel(
+                            appointmentId = appointmentId,
+                            getAppointment = appContainer.getAppointment,
+                            updateAppointment = appContainer.updateAppointment,
+                        )
+                    },
+                )
+                AppointmentEditScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
             }
             composable(Routes.APPOINTMENT_FORM) {
                 val viewModel: AppointmentFormViewModel = viewModel(
