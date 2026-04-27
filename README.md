@@ -5,7 +5,7 @@
 <h1 align="center">AgendaPro Beauty</h1>
 
 <p align="center">
-  App Android nativo para agenda, equipe, clientes, servicos e financeiro de barbearias, studios de beleza e profissionais autonomos.
+  SaaS mobile Android para agenda, equipe, clientes, servicos, financeiro e monetizacao premium em pequenos negocios de beleza.
 </p>
 
 <p align="center">
@@ -13,134 +13,288 @@
   <img alt="Android" src="https://img.shields.io/badge/Android-Nativo-3DDC84?logo=android&logoColor=white">
   <img alt="Jetpack Compose" src="https://img.shields.io/badge/Jetpack%20Compose-2026.04.01-4285F4?logo=jetpackcompose&logoColor=white">
   <img alt="Material 3" src="https://img.shields.io/badge/Material%203-UI-6750A4?logo=materialdesign&logoColor=white">
-  <img alt="Room" src="https://img.shields.io/badge/Room-Database-0F766E">
-  <img alt="Build" src="https://img.shields.io/badge/build-passing-brightgreen">
+  <img alt="Room" src="https://img.shields.io/badge/Room-2.8.4-0F766E">
+  <img alt="DataStore" src="https://img.shields.io/badge/DataStore-1.2.1-2563EB">
+  <img alt="Min SDK" src="https://img.shields.io/badge/minSdk-26-111827">
+  <img alt="Status" src="https://img.shields.io/badge/status-MVP%20local--first-brightgreen">
 </p>
+
+## Sumario
+
+- [Visao Geral](#visao-geral)
+- [Problema e Proposta](#problema-e-proposta)
+- [Publico-Alvo](#publico-alvo)
+- [Modelo de Produto](#modelo-de-produto)
+- [Funcionalidades](#funcionalidades)
+- [Dados de Demonstracao](#dados-de-demonstracao)
+- [Monetizacao](#monetizacao)
+- [Stack Tecnica](#stack-tecnica)
+- [Arquitetura](#arquitetura)
+- [Estrutura de Pastas](#estrutura-de-pastas)
+- [Banco Local](#banco-local)
+- [Como Rodar](#como-rodar)
+- [Testar no Emulador](#testar-no-emulador)
+- [Checklist de QA](#checklist-de-qa)
+- [Preparacao para Play Store](#preparacao-para-play-store)
+- [Roadmap](#roadmap)
+- [Status](#status)
 
 ## Visao Geral
 
-O AgendaPro Beauty e um SaaS mobile local-first para pequenos negocios de beleza. O objetivo e ajudar o dono ou profissional a controlar a rotina de atendimento sem depender de planilhas, papel ou conversas perdidas no WhatsApp.
+O AgendaPro Beauty e um aplicativo Android nativo, local-first, pensado para barbeiros, cabeleireiros, manicures, lash designers, designers de sobrancelha e pequenos saloes que precisam controlar agenda e operacao sem depender de papel, planilhas ou mensagens perdidas no WhatsApp.
 
-O app foi desenhado para:
+O objetivo do produto e evoluir para um SaaS mobile com assinatura premium. A versao atual ja entrega um MVP funcional com cadastro de empresa, profissionais, clientes, servicos, agenda diaria, financeiro basico, modo de usuario e controle de limite gratis.
 
-- barbearias;
-- saloes pequenos;
-- cabeleireiros;
-- manicures;
-- lash designers;
-- designers de sobrancelha;
-- profissionais autonomos de beleza.
+## Problema e Proposta
+
+Pequenos negocios de beleza normalmente sofrem com:
+
+- agendamentos espalhados em conversas;
+- conflito de horario entre profissionais;
+- falta de historico de clientes;
+- dificuldade para saber quanto entrou no dia ou no mes;
+- baixa disciplina para controlar despesas;
+- pouca clareza sobre quais clientes e servicos geram receita.
+
+A proposta do AgendaPro Beauty e centralizar esses fluxos em uma experiencia simples:
+
+| Dor | Solucao no app |
+| --- | --- |
+| Agenda baguncada | Agenda diaria com horarios disponiveis por profissional. |
+| Conflito de horario | Bloqueio de sobreposicao para o mesmo profissional. |
+| Cliente sem historico | Detalhe do cliente com atendimentos e total gasto. |
+| Servicos sem padrao | Catalogo com preco e duracao. |
+| Caixa confuso | Receita automatica ao concluir atendimento e despesas manuais. |
+| Produto gratuito sem limite | Plano gratis com ate 30 agendamentos por mes. |
+
+## Publico-Alvo
+
+- Barbearias pequenas.
+- Saloes de bairro.
+- Cabeleireiros independentes.
+- Manicures.
+- Lash designers.
+- Designers de sobrancelha.
+- Profissionais autonomos que atendem por agenda.
+- Studios com 2 a 6 profissionais.
 
 ## Modelo de Produto
 
-O app separa os conceitos principais do negocio:
+O app separa claramente os conceitos centrais do negocio:
 
 | Conceito | Significado |
 | --- | --- |
 | Empresa | Salao, barbearia, studio ou marca do profissional autonomo. |
-| Equipe | Profissionais que atendem dentro da empresa. |
-| Clientes | Pessoas atendidas pelos profissionais. |
-| Servicos | Tabela de servicos com preco e duracao. |
-| Agenda | Agendamentos filtrados por data e profissional. |
-| Financeiro | Receitas de atendimentos concluidos e despesas simples. |
+| Profissional | Pessoa da equipe que executa atendimentos. |
+| Cliente | Pessoa atendida pelos profissionais. |
+| Servico | Item vendido, com preco e duracao. |
+| Agenda | Atendimentos marcados por data, horario e profissional. |
+| Financeiro | Receitas concluidas, despesas e saldo estimado. |
+| Plano | Regras de uso gratis ou premium. |
 
-Essa separacao evita confusao entre "quem e a empresa", "quem atende" e "quem e o cliente".
+Essa divisao evita a confusao comum entre "quem e a empresa", "quem atende" e "quem e o cliente".
 
-## Funcionalidades Atuais
+## Funcionalidades
 
-- Onboarding da empresa e primeiro profissional.
-- Dashboard com visao da empresa.
-- Modo Administrador e Modo Profissional com navegacao simplificada.
-- Cadastro de equipe/profissionais.
-- Edicao de profissionais, funcao, telefone, horario de trabalho e tamanho do slot.
-- Cadastro e edicao de clientes.
-- Detalhe do cliente com historico, total gasto, ultima visita e agendamento rapido.
-- Cadastro, edicao e desativacao de servicos.
+### Empresa e Onboarding
+
+- Configuracao inicial da empresa.
+- Cadastro do primeiro profissional.
+- Persistencia do onboarding via DataStore.
+- Criacao automatica de dados de demonstracao para acelerar testes.
+
+### Dashboard
+
+- Visao geral do negocio.
+- Receita do dia.
+- Receita do mes.
+- Contagem de agendamentos do dia.
+- Atendimentos concluidos.
+- Quantidade de clientes, equipe e servicos.
+- Lista de proximos atendimentos.
+- Aviso de limite gratis proximo do fim.
+- Acesso rapido para agenda, equipe, financeiro e premium.
+
+### Equipe e Profissionais
+
+- Cadastro de profissionais.
+- Edicao de nome, funcao, telefone, horario inicial, horario final e tamanho do slot.
+- Desativacao de profissionais.
+- Janela de trabalho usada no calculo de horarios livres.
+
+### Clientes
+
+- Cadastro de clientes.
+- Busca por nome.
+- Edicao de nome, telefone e observacoes.
+- Detalhe do cliente.
+- Historico de atendimentos.
+- Total gasto pelo cliente.
+- Ultima visita.
+- Agendamento rapido a partir do cliente.
+
+### Servicos
+
+- Cadastro de servicos.
+- Edicao de nome, preco e duracao.
+- Desativacao de servicos.
+- Uso dos servicos no calculo de duracao do atendimento.
+
+### Agenda
+
 - Agenda diaria.
-- Filtro da agenda por profissional.
-- Visualizacao de horarios disponiveis por profissional.
-- Timeline visual da agenda por horario.
-- Criacao de agendamento com profissional, cliente cadastrado, servico cadastrado, data e horario livre.
-- Edicao e reagendamento basico de atendimentos.
-- Bloqueio de conflito de horario por profissional.
-- Cancelamento e conclusao de agendamentos.
-- Lancamento automatico de receita ao concluir atendimento.
-- Financeiro com resumo do dia, resumo do mes, receitas por servico, despesas por categoria e movimentacoes do mes.
-- Controle real do plano gratis: 30 agendamentos por mes.
-- Tela Premium com ativacao local para testar limite gratis vs agenda ilimitada.
-- Dados de demonstracao criados automaticamente para teste: empresa, profissionais, servicos e clientes.
+- Filtro por profissional.
+- Timeline visual por horario.
+- Visualizacao de horarios livres.
+- Criacao de atendimento com profissional, cliente, servico, data e horario.
+- Edicao e reagendamento basico.
+- Cancelamento.
+- Conclusao de atendimento.
+- Bloqueio de conflito de horario para o mesmo profissional.
 
-## Monetizacao Planejada
+### Financeiro
 
-Plano gratis:
+- Receita automatica ao concluir atendimento.
+- Despesas manuais.
+- Resumo do dia.
+- Resumo do mes.
+- Receita por servico.
+- Despesas por categoria.
+- Movimentacoes do mes.
+- Saldo estimado.
 
-- ate 30 agendamentos por mes;
-- agenda diaria;
-- clientes;
-- servicos;
-- financeiro basico.
+### Planos e Premium
 
-Plano premium:
+- Plano gratis limitado a 30 agendamentos por mes.
+- Bloqueio real de novos agendamentos ao atingir o limite gratis.
+- Tela Premium com estado local.
+- Ativacao local do Premium para teste.
+- Retorno ao plano gratis para validar bloqueios.
 
-- agendamentos ilimitados;
-- relatorios completos;
-- backup futuro;
-- personalizacao;
-- lembretes;
-- recursos avancados para equipe.
+### Modo de Usuario
 
-## Stack
+- Modo Administrador.
+- Modo Profissional.
+- Navegacao simplificada no modo Profissional.
+- Bloqueio de permanencia em rotas administrativas quando o modo Profissional esta ativo.
 
-- Kotlin
-- Android nativo
-- Jetpack Compose
-- Material 3
-- MVVM
-- Clean Architecture simples
-- Room Database
-- DataStore
-- Coroutines + Flow
-- Navigation Compose
-- Gradle Version Catalog
+## Dados de Demonstracao
+
+Ao abrir o app em uma instalacao nova, o projeto cria automaticamente uma base de teste local:
+
+| Tipo | Dados |
+| --- | --- |
+| Empresa | Honeypot Beauty Studio |
+| Profissionais | Lucas Andrade, Marina Costa, Bianca Lima |
+| Servicos | Corte masculino, Barba, Corte + barba, Escova, Manicure |
+| Clientes | Rafael Souza, Camila Nunes, Thiago Martins, Juliana Rocha |
+
+O seed e idempotente:
+
+- roda apenas uma vez por instalacao;
+- nao duplica nomes existentes;
+- marca o onboarding como concluido;
+- permite testar o produto imediatamente.
+
+Para resetar os dados no emulador:
+
+```powershell
+E:\Android\Sdk\platform-tools\adb.exe uninstall com.agendaprobeauty.app
+```
+
+Depois instale o APK novamente.
+
+## Monetizacao
+
+### Plano Gratis
+
+- Ate 30 agendamentos por mes.
+- Agenda diaria.
+- Cadastro de clientes.
+- Cadastro de servicos.
+- Financeiro basico.
+- Uso local-first.
+
+### Plano Premium
+
+- Agendamentos ilimitados.
+- Relatorios completos.
+- Backup em nuvem futuro.
+- Personalizacao da empresa.
+- Lembretes futuros.
+- Recursos avancados de equipe.
+
+### Proxima etapa de monetizacao
+
+A tela Premium atual usa estado local para validar a regra de produto. A evolucao natural e integrar Google Play Billing para assinatura real, validar recibos e persistir o entitlement premium com seguranca.
+
+## Stack Tecnica
+
+| Camada | Tecnologia |
+| --- | --- |
+| Linguagem | Kotlin 2.3.20 |
+| Plataforma | Android nativo |
+| UI | Jetpack Compose + Material 3 |
+| Arquitetura | MVVM + Clean Architecture simples |
+| Navegacao | Navigation Compose |
+| Banco local | Room 2.8.4 |
+| Preferencias | DataStore 1.2.1 |
+| Assincrono | Coroutines + Flow |
+| Build | Gradle + Version Catalog |
+| Min SDK | 26 |
+| Target SDK | 36 |
 
 ## Arquitetura
 
+Fluxo principal:
+
 ```text
-UI Compose
+Compose Screen
   -> ViewModel
     -> Use Case
       -> Repository Interface
-        -> Repository Impl
+        -> Repository Implementation
           -> Room DAO / DataStore
 ```
 
-Estrutura principal:
+Principios aplicados:
+
+- UI nao acessa Room diretamente.
+- ViewModels orquestram estado de tela.
+- Use cases concentram regras de aplicacao.
+- Repositories isolam fonte de dados.
+- Modelos de dominio ficam separados de entidades Room.
+- DataStore guarda preferencias e estado de plano/modo.
+
+## Estrutura de Pastas
 
 ```text
 app/src/main/java/com/agendaprobeauty/app
 
 core/
-  database/
-  datastore/
-  di/
-  navigation/
-  ui/theme/
-  util/
+  database/      Configuracao Room e converters
+  datastore/     Preferencias locais
+  di/            Injecao manual simples
+  navigation/    Rotas e NavHost
+  ui/theme/      Tema Material 3
+  util/          Datas e dinheiro
 
 data/
-  local/dao/
-  local/entity/
-  mapper/
-  repository/
+  local/dao/     DAOs Room
+  local/entity/  Entidades persistidas
+  mapper/        Conversao entity <-> domain
+  repository/    Implementacoes dos repositories
 
 domain/
-  model/
-  repository/
-  usecase/
+  model/         Modelos de negocio
+  repository/    Contratos de dados
+  usecase/       Regras de aplicacao
 
 feature/
   agenda/
+  appointmentedit/
   appointmentform/
+  clientdetail/
   clients/
   dashboard/
   finance/
@@ -153,41 +307,45 @@ feature/
 
 ## Banco Local
 
-O app usa Room como banco local.
+O app usa Room como armazenamento local.
 
 Entidades principais:
 
-- `ProfessionalEntity`
-- `StaffMemberEntity`
-- `ClientEntity`
-- `ServiceEntity`
-- `AppointmentEntity`
-- `FinancialEntryEntity`
-- `MonthlyUsageEntity`
+| Entidade | Responsabilidade |
+| --- | --- |
+| `ProfessionalEntity` | Empresa/perfil inicial. |
+| `StaffMemberEntity` | Profissionais da equipe e disponibilidade base. |
+| `ClientEntity` | Clientes atendidos. |
+| `ServiceEntity` | Catalogo de servicos. |
+| `AppointmentEntity` | Agendamentos e status. |
+| `FinancialEntryEntity` | Receitas e despesas. |
+| `MonthlyUsageEntity` | Uso mensal planejado para regras de plano. |
+
+O banco atual usa `fallbackToDestructiveMigration` para desenvolvimento rapido. Antes de producao, isso deve ser substituido por migrations versionadas.
 
 ## Como Rodar
 
-Pre-requisitos:
+### Pre-requisitos
 
-- Java 17 ou superior;
-- Android SDK instalado;
-- Android SDK Platform 36;
-- Android Build Tools 36;
+- Java 17 ou superior.
+- Android SDK instalado.
+- Android SDK Platform 36.
+- Android Build Tools 36.
 - Emulador Android ou celular com depuracao USB.
 
-Neste ambiente, o SDK foi configurado em:
+Neste ambiente, o SDK esta em:
 
 ```text
 E:/Android/Sdk
 ```
 
-O arquivo local do projeto deve apontar para o SDK:
+O arquivo `local.properties` deve apontar para:
 
 ```properties
 sdk.dir=E:/Android/Sdk
 ```
 
-Compilar:
+### Compilar
 
 ```powershell
 cd E:\Honeypot
@@ -200,51 +358,147 @@ APK gerado:
 app/build/outputs/apk/debug/app-debug.apk
 ```
 
-## Rodar No Emulador
+## Testar no Emulador
 
-Emulador criado:
+Emulador criado neste ambiente:
 
 ```text
 AgendaPro_Pixel_E
 ```
 
-Iniciar:
+Configurar variaveis:
 
 ```powershell
 $env:ANDROID_HOME="E:\Android\Sdk"
 $env:ANDROID_SDK_ROOT="E:\Android\Sdk"
 $env:ANDROID_AVD_HOME="E:\Android\Avd"
+```
+
+Iniciar emulador:
+
+```powershell
 E:\Android\Sdk\emulator\emulator.exe -avd AgendaPro_Pixel_E -gpu swiftshader_indirect -no-snapshot
 ```
 
-Instalar o app:
+Instalar APK:
 
 ```powershell
 E:\Android\Sdk\platform-tools\adb.exe install -r E:\Honeypot\app\build\outputs\apk\debug\app-debug.apk
 ```
 
-Abrir o app:
+Abrir app:
 
 ```powershell
 E:\Android\Sdk\platform-tools\adb.exe shell monkey -p com.agendaprobeauty.app -c android.intent.category.LAUNCHER 1
 ```
 
+Limpar instalacao:
+
+```powershell
+E:\Android\Sdk\platform-tools\adb.exe uninstall com.agendaprobeauty.app
+```
+
+## Checklist de QA
+
+Fluxo recomendado para validar o MVP:
+
+1. Abrir o app em uma instalacao limpa.
+2. Confirmar se os dados de demonstracao aparecem.
+3. Abrir Dashboard e validar metricas iniciais.
+4. Entrar em Equipe e editar horario de um profissional.
+5. Entrar em Servicos e editar preco/duracao.
+6. Entrar em Clientes e editar telefone/observacoes.
+7. Criar um agendamento para cada profissional.
+8. Tentar criar dois agendamentos no mesmo horario para o mesmo profissional.
+9. Concluir um atendimento.
+10. Confirmar se a receita apareceu no Financeiro.
+11. Lancar uma despesa manual.
+12. Alternar para Modo Profissional em Configuracoes.
+13. Validar se abas administrativas somem.
+14. Voltar para Modo Administrador.
+15. Testar ativacao local do Premium.
+
+## Preparacao para Play Store
+
+Antes de publicar:
+
+- Criar icone launcher final.
+- Definir nome comercial final.
+- Criar politica de privacidade.
+- Remover ou controlar dados de demonstracao em builds de producao.
+- Trocar destructive migration por migrations reais.
+- Criar build release assinado.
+- Configurar versionamento `versionCode` e `versionName`.
+- Criar screenshots para Play Store.
+- Escrever descricao curta e longa.
+- Criar teste fechado.
+- Integrar Google Play Billing para assinatura real.
+- Validar comportamento offline.
+
 ## Roadmap
 
-- Integracao futura com Google Play Billing.
-- Backup e sincronizacao futura.
-- Lembretes via notificacao.
-- Permissoes reais por login para administradores e profissionais.
-- Relatorios financeiros por periodo customizado.
+### Curto Prazo
+
+- Melhorar busca e selecao em agendamento.
+- Criar periodo customizado no financeiro.
+- Adicionar filtros por status na agenda.
+- Criar tela de detalhe completo do atendimento.
+- Adicionar testes unitarios para use cases principais.
+
+### Medio Prazo
+
+- Google Play Billing.
+- Relatorios por profissional, servico e periodo.
 - Segmentacao de clientes inativos e recorrentes.
-- Politica de privacidade e preparacao para Play Store.
+- Permissoes reais com login.
+- Backup e sincronizacao em nuvem.
+- Notificacoes locais de lembrete.
+
+### Longo Prazo
+
+- Painel web administrativo.
+- Multi-unidade.
+- Integracao com WhatsApp.
+- Confirmacao automatica de atendimento.
+- Programa de fidelidade.
+- Analytics de churn e receita recorrente.
 
 ## Status
 
-Projeto em MVP funcional local-first. A base Android, arquitetura, banco local, equipe, clientes, servicos, agenda, financeiro, premium local e modo de usuario ja estao funcionando localmente.
+Projeto em MVP funcional local-first.
+
+Ja funciona localmente:
+
+- arquitetura Android nativa em Kotlin;
+- Compose com Material 3;
+- Room + DataStore;
+- agenda por profissional;
+- clientes e historico;
+- servicos;
+- equipe com horarios editaveis;
+- financeiro;
+- premium local;
+- modo Administrador/Profissional;
+- dados de demonstracao.
+
+Ultima validacao local:
+
+```powershell
+.\gradlew.bat :app:assembleDebug
+```
+
+Resultado esperado:
+
+```text
+BUILD SUCCESSFUL
+```
 
 ## Repositorio
 
 ```text
 https://github.com/juniorrondini/Honeypot
 ```
+
+## Licenca
+
+Ainda nao definida. Antes de distribuicao publica ou comercial, escolha uma licenca apropriada ou mantenha o projeto como codigo proprietario.
