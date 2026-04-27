@@ -23,6 +23,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun ClientsScreen(
     viewModel: ClientsViewModel,
+    onOpenClient: (Long) -> Unit,
+    onScheduleClient: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -75,8 +77,13 @@ fun ClientsScreen(
                             Text(client.name)
                             Text(client.phone.orEmpty(), color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
-                        OutlinedButton(onClick = { viewModel.delete(client.id) }) {
-                            Text("Excluir")
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedButton(onClick = { onOpenClient(client.id) }) {
+                                Text("Ver")
+                            }
+                            OutlinedButton(onClick = { onScheduleClient(client.id) }) {
+                                Text("Agendar")
+                            }
                         }
                     }
                 }

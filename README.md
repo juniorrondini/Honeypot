@@ -52,6 +52,7 @@ Essa separacao evita confusao entre "quem e a empresa", "quem atende" e "quem e 
 - Dashboard com visao da empresa.
 - Cadastro de equipe/profissionais.
 - Cadastro de clientes.
+- Detalhe do cliente com historico, total gasto, ultima visita e agendamento rapido.
 - Cadastro de servicos.
 - Agenda diaria.
 - Filtro da agenda por profissional.
@@ -226,7 +227,7 @@ E:\Android\Sdk\platform-tools\adb.exe shell monkey -p com.agendaprobeauty.app -c
 
 ## Roadmap
 
-- Melhorar detalhes de atendimento e historico do cliente.
+- Melhorar edicao de clientes e segmentacao de clientes inativos.
 - Historico por cliente.
 - Relatorios financeiros por periodo.
 - Tela premium com bloqueios reais.

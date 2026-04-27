@@ -20,6 +20,9 @@ class AppointmentRepositoryImpl(
 
     override fun observeAppointment(id: Long): Flow<Appointment?> = dao.observeById(id).map { it?.toDomain() }
 
+    override fun observeAppointmentsForClient(clientId: Long): Flow<List<Appointment>> =
+        dao.observeByClient(clientId).map { appointments -> appointments.map { it.toDomain() } }
+
     override suspend fun getAppointment(id: Long): Appointment? = dao.getById(id)?.toDomain()
 
     override suspend fun countAppointmentsBetween(startAt: Long, endAt: Long): Int = dao.countBetween(startAt, endAt)

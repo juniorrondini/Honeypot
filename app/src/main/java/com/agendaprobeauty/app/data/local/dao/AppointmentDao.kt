@@ -19,6 +19,9 @@ interface AppointmentDao {
     @Query("SELECT * FROM appointments WHERE id = :id")
     fun observeById(id: Long): Flow<AppointmentEntity?>
 
+    @Query("SELECT * FROM appointments WHERE clientId = :clientId ORDER BY startAt DESC")
+    fun observeByClient(clientId: Long): Flow<List<AppointmentEntity>>
+
     @Query("SELECT * FROM appointments WHERE id = :id")
     suspend fun getById(id: Long): AppointmentEntity?
 

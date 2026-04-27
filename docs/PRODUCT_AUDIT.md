@@ -314,3 +314,14 @@ A agenda tambem foi evoluida para:
 - exibir resumo do dia por profissional;
 - permitir editar/reagendar um atendimento existente;
 - permitir concluir ou cancelar direto pela agenda.
+
+## Atualizacao De Cliente
+
+O modulo de clientes foi evoluido para:
+
+- abrir detalhe completo do cliente;
+- mostrar historico de atendimentos;
+- calcular total gasto em atendimentos concluidos;
+- mostrar ultima visita;
+- mostrar contagem de atendimentos concluidos e cancelados;
+- agendar novamente ja com o cliente selecionado.

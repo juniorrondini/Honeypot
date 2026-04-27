@@ -67,8 +67,9 @@ class AppointmentFormViewModel(
     getActiveStaff: GetActiveStaffUseCase,
     searchClients: SearchClientsUseCase,
     getActiveServices: GetActiveServicesUseCase,
+    initialClientId: Long? = null,
 ) : ViewModel() {
-    private val inputs = MutableStateFlow(AppointmentFormInputs())
+    private val inputs = MutableStateFlow(AppointmentFormInputs(selectedClientId = initialClientId))
     private val staffFlow = getActiveStaff()
     private val clientsFlow = searchClients("")
     private val servicesFlow = getActiveServices()

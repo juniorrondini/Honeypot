@@ -29,6 +29,8 @@ import com.agendaprobeauty.app.domain.usecase.appointment.GetAppointmentUseCase
 import com.agendaprobeauty.app.domain.usecase.appointment.UpdateAppointmentUseCase
 import com.agendaprobeauty.app.domain.usecase.client.CreateClientUseCase
 import com.agendaprobeauty.app.domain.usecase.client.DeleteClientUseCase
+import com.agendaprobeauty.app.domain.usecase.client.GetClientAppointmentsUseCase
+import com.agendaprobeauty.app.domain.usecase.client.GetClientUseCase
 import com.agendaprobeauty.app.domain.usecase.client.SearchClientsUseCase
 import com.agendaprobeauty.app.domain.usecase.finance.CreateManualExpenseUseCase
 import com.agendaprobeauty.app.domain.usecase.finance.GetFinanceEntriesUseCase
@@ -74,6 +76,8 @@ class AppContainer(
     val saveProfessionalProfile = SaveProfessionalProfileUseCase(professionalRepository, settingsRepository, createStaffMember)
 
     val searchClients = SearchClientsUseCase(clientRepository)
+    val getClient = GetClientUseCase(clientRepository)
+    val getClientAppointments = GetClientAppointmentsUseCase(appointmentRepository)
     val createClient = CreateClientUseCase(clientRepository)
     val deleteClient = DeleteClientUseCase(clientRepository)
 

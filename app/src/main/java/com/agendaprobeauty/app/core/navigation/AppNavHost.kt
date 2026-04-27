@@ -31,6 +31,8 @@ import com.agendaprobeauty.app.feature.appointmentform.AppointmentFormScreen
 import com.agendaprobeauty.app.feature.appointmentform.AppointmentFormViewModel
 import com.agendaprobeauty.app.feature.clients.ClientsScreen
 import com.agendaprobeauty.app.feature.clients.ClientsViewModel
+import com.agendaprobeauty.app.feature.clientdetail.ClientDetailScreen
+import com.agendaprobeauty.app.feature.clientdetail.ClientDetailViewModel
 import com.agendaprobeauty.app.feature.dashboard.DashboardScreen
 import com.agendaprobeauty.app.feature.dashboard.DashboardViewModel
 import com.agendaprobeauty.app.feature.finance.FinanceScreen
@@ -183,13 +185,56 @@ fun AppNavHost(
                     onOpenStaff = { navController.navigate(Routes.STAFF) },
                 )
             }
+            composable("${Routes.APPOINTMENT_FORM_CLIENT}/{clientId}") { entry ->
+                val clientId = entry.arguments?.getString("clientId")?.toLongOrNull()
+                val viewModel: AppointmentFormViewModel = viewModel(
+                    factory = viewModelFactory {
+                        AppointmentFormViewModel(
+                            appContainer.createAppointment,
+                            appContainer.getDailyAppointments,
+                            appContainer.getActiveStaff,
+                            appContainer.searchClients,
+                            appContainer.getActiveServices,
+                            initialClientId = clientId,
+                        )
+                    },
+                )
+                AppointmentFormScreen(
+                    viewModel = viewModel,
+                    onBack = { navController.popBackStack() },
+                    onOpenClients = { navController.navigate(Routes.CLIENTS) },
+                    onOpenServices = { navController.navigate(Routes.SERVICES) },
+                    onOpenStaff = { navController.navigate(Routes.STAFF) },
+                )
+            }
             composable(Routes.CLIENTS) {
                 val viewModel: ClientsViewModel = viewModel(
                     factory = viewModelFactory {
                         ClientsViewModel(appContainer.searchClients, appContainer.createClient, appContainer.deleteClient)
                     },
                 )
-                ClientsScreen(viewModel = viewModel)
+                ClientsScreen(
+                    viewModel = viewModel,
+                    onOpenClient = { id -> navController.navigate("${Routes.CLIENT_DETAIL}/$id") },
+                    onScheduleClient = { id -> navController.navigate("${Routes.APPOINTMENT_FORM_CLIENT}/$id") },
+                )
+            }
+            composable("${Routes.CLIENT_DETAIL}/{clientId}") { entry ->
+                val clientId = entry.arguments?.getString("clientId")?.toLongOrNull() ?: 0L
+                val viewModel: ClientDetailViewModel = viewModel(
+                    factory = viewModelFactory {
+                        ClientDetailViewModel(
+                            clientId = clientId,
+                            getClient = appContainer.getClient,
+                            getClientAppointments = appContainer.getClientAppointments,
+                        )
+                    },
+                )
+                ClientDetailScreen(
+                    viewModel = viewModel,
+                    onBack = { navController.popBackStack() },
+                    onScheduleAgain = { id -> navController.navigate("${Routes.APPOINTMENT_FORM_CLIENT}/$id") },
+                )
             }
             composable(Routes.SERVICES) {
                 val viewModel: ServicesViewModel = viewModel(

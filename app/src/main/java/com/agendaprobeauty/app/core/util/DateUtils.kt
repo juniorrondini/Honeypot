@@ -41,4 +41,9 @@ object DateUtils {
 
     fun formatTime(millis: Long): String =
         LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(millis), zoneId).toLocalTime().format(timeFormatter)
+
+    fun formatDateTime(millis: Long): String {
+        val dateTime = LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(millis), zoneId)
+        return "${dateTime.toLocalDate().format(dateFormatter)} ${dateTime.toLocalTime().format(timeFormatter)}"
+    }
 }
