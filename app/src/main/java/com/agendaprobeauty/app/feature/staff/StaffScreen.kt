@@ -40,7 +40,7 @@ fun StaffScreen(
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text("Equipe", style = MaterialTheme.typography.headlineSmall)
                 Text(
-                    "Cadastre quem atende. A agenda e os horários livres são filtrados por profissional.",
+                    "Cadastre quem atende e defina a janela de trabalho usada para calcular horarios livres.",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -48,7 +48,10 @@ fun StaffScreen(
         item {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)) {
                 Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Novo profissional", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        if (state.editingStaffMember == null) "Novo profissional" else "Editando ${state.editingStaffMember?.name.orEmpty()}",
+                        style = MaterialTheme.typography.titleMedium,
+                    )
                     OutlinedTextField(
                         value = state.name,
                         onValueChange = viewModel::updateName,
@@ -58,7 +61,7 @@ fun StaffScreen(
                     OutlinedTextField(
                         value = state.role,
                         onValueChange = viewModel::updateRole,
-                        label = { Text("Função") },
+                        label = { Text("Funcao") },
                         modifier = Modifier.fillMaxWidth(),
                     )
                     OutlinedTextField(
@@ -71,7 +74,7 @@ fun StaffScreen(
                         OutlinedTextField(
                             value = state.startHour,
                             onValueChange = viewModel::updateStartHour,
-                            label = { Text("Início") },
+                            label = { Text("Inicio") },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.weight(1f),
                         )
@@ -90,30 +93,45 @@ fun StaffScreen(
                             modifier = Modifier.weight(1f),
                         )
                     }
-                    Button(onClick = viewModel::save, modifier = Modifier.fillMaxWidth()) {
-                        Text("Salvar profissional")
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        Button(onClick = viewModel::save, modifier = Modifier.weight(1f)) {
+                            Text(if (state.editingStaffMember == null) "Salvar profissional" else "Salvar alteracoes")
+                        }
+                        if (state.editingStaffMember != null) {
+                            OutlinedButton(onClick = viewModel::clearForm, modifier = Modifier.weight(1f)) {
+                                Text("Cancelar")
+                            }
+                        }
                     }
                 }
             }
         }
         items(state.staff, key = { it.id }) { member ->
             Card {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(14.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     Column {
                         Text(member.name, style = MaterialTheme.typography.titleMedium)
                         Text(member.role, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(
-                            "${member.workStartHour}:00 às ${member.workEndHour}:00 · ${member.slotMinutes} min",
+                            "${member.workStartHour}:00 as ${member.workEndHour}:00 | slot ${member.slotMinutes} min",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
+                        if (!member.phone.isNullOrBlank()) {
+                            Text(member.phone, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
                     }
-                    OutlinedButton(onClick = { viewModel.deactivate(member.id) }) {
-                        Text("Desativar")
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        OutlinedButton(onClick = { viewModel.startEditing(member) }, modifier = Modifier.weight(1f)) {
+                            Text("Editar")
+                        }
+                        OutlinedButton(onClick = { viewModel.deactivate(member.id) }, modifier = Modifier.weight(1f)) {
+                            Text("Desativar")
+                        }
                     }
                 }
             }

@@ -17,12 +17,16 @@ class SettingsDataStore(
 ) {
     private object Keys {
         val onboardingCompleted = booleanPreferencesKey("onboarding_completed")
+        val demoDataSeeded = booleanPreferencesKey("demo_data_seeded")
         val planType = stringPreferencesKey("plan_type")
         val userMode = stringPreferencesKey("user_mode")
     }
 
     val isOnboardingCompleted: Flow<Boolean> = context.settingsDataStore.data
         .map { preferences -> preferences[Keys.onboardingCompleted] ?: false }
+
+    val isDemoDataSeeded: Flow<Boolean> = context.settingsDataStore.data
+        .map { preferences -> preferences[Keys.demoDataSeeded] ?: false }
 
     val planType: Flow<PlanType> = context.settingsDataStore.data
         .map { preferences ->
@@ -37,6 +41,12 @@ class SettingsDataStore(
     suspend fun setOnboardingCompleted(completed: Boolean) {
         context.settingsDataStore.edit { preferences ->
             preferences[Keys.onboardingCompleted] = completed
+        }
+    }
+
+    suspend fun setDemoDataSeeded(seeded: Boolean) {
+        context.settingsDataStore.edit { preferences ->
+            preferences[Keys.demoDataSeeded] = seeded
         }
     }
 

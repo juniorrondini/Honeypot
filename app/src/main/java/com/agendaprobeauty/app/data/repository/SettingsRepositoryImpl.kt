@@ -10,10 +10,13 @@ class SettingsRepositoryImpl(
     private val dataStore: SettingsDataStore,
 ) : SettingsRepository {
     override val isOnboardingCompleted: Flow<Boolean> = dataStore.isOnboardingCompleted
+    override val isDemoDataSeeded: Flow<Boolean> = dataStore.isDemoDataSeeded
     override val planType: Flow<PlanType> = dataStore.planType
     override val userMode: Flow<UserMode> = dataStore.userMode
 
     override suspend fun setOnboardingCompleted(completed: Boolean) = dataStore.setOnboardingCompleted(completed)
+
+    override suspend fun setDemoDataSeeded(seeded: Boolean) = dataStore.setDemoDataSeeded(seeded)
 
     override suspend fun setPlanType(planType: PlanType) = dataStore.setPlanType(planType)
 

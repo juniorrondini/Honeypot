@@ -34,6 +34,7 @@ import com.agendaprobeauty.app.domain.usecase.client.GetClientAppointmentsUseCas
 import com.agendaprobeauty.app.domain.usecase.client.GetClientUseCase
 import com.agendaprobeauty.app.domain.usecase.client.SearchClientsUseCase
 import com.agendaprobeauty.app.domain.usecase.client.UpdateClientUseCase
+import com.agendaprobeauty.app.domain.usecase.demo.SeedDemoDataUseCase
 import com.agendaprobeauty.app.domain.usecase.finance.CreateManualExpenseUseCase
 import com.agendaprobeauty.app.domain.usecase.finance.GetFinanceEntriesUseCase
 import com.agendaprobeauty.app.domain.usecase.finance.GetFinanceSummaryUseCase
@@ -47,6 +48,7 @@ import com.agendaprobeauty.app.domain.usecase.service.UpdateServiceUseCase
 import com.agendaprobeauty.app.domain.usecase.staff.CreateStaffMemberUseCase
 import com.agendaprobeauty.app.domain.usecase.staff.DeactivateStaffMemberUseCase
 import com.agendaprobeauty.app.domain.usecase.staff.GetActiveStaffUseCase
+import com.agendaprobeauty.app.domain.usecase.staff.UpdateStaffMemberUseCase
 import com.agendaprobeauty.app.domain.usecase.subscription.GetCurrentPlanUseCase
 
 class AppContainer(
@@ -73,6 +75,7 @@ class AppContainer(
 
     val getActiveStaff = GetActiveStaffUseCase(staffRepository)
     val createStaffMember = CreateStaffMemberUseCase(staffRepository)
+    val updateStaffMember = UpdateStaffMemberUseCase(staffRepository)
     val deactivateStaffMember = DeactivateStaffMemberUseCase(staffRepository)
 
     val getProfessionalProfile = GetProfessionalProfileUseCase(professionalRepository)
@@ -105,4 +108,12 @@ class AppContainer(
     val createManualExpense = CreateManualExpenseUseCase(financeRepository)
 
     val getCurrentPlan = GetCurrentPlanUseCase(subscriptionRepository)
+
+    val seedDemoData = SeedDemoDataUseCase(
+        professionalRepository = professionalRepository,
+        staffRepository = staffRepository,
+        serviceRepository = serviceRepository,
+        clientRepository = clientRepository,
+        settingsRepository = settingsRepository,
+    )
 }

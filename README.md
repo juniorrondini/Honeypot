@@ -52,6 +52,7 @@ Essa separacao evita confusao entre "quem e a empresa", "quem atende" e "quem e 
 - Dashboard com visao da empresa.
 - Modo Administrador e Modo Profissional com navegacao simplificada.
 - Cadastro de equipe/profissionais.
+- Edicao de profissionais, funcao, telefone, horario de trabalho e tamanho do slot.
 - Cadastro e edicao de clientes.
 - Detalhe do cliente com historico, total gasto, ultima visita e agendamento rapido.
 - Cadastro, edicao e desativacao de servicos.
@@ -67,6 +68,7 @@ Essa separacao evita confusao entre "quem e a empresa", "quem atende" e "quem e 
 - Financeiro com resumo do dia, resumo do mes, receitas por servico, despesas por categoria e movimentacoes do mes.
 - Controle real do plano gratis: 30 agendamentos por mes.
 - Tela Premium com ativacao local para testar limite gratis vs agenda ilimitada.
+- Dados de demonstracao criados automaticamente para teste: empresa, profissionais, servicos e clientes.
 
 ## Monetizacao Planejada
 

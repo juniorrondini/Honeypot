@@ -6,6 +6,7 @@ import com.agendaprobeauty.app.domain.model.StaffMember
 import com.agendaprobeauty.app.domain.usecase.staff.CreateStaffMemberUseCase
 import com.agendaprobeauty.app.domain.usecase.staff.DeactivateStaffMemberUseCase
 import com.agendaprobeauty.app.domain.usecase.staff.GetActiveStaffUseCase
+import com.agendaprobeauty.app.domain.usecase.staff.UpdateStaffMemberUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,11 +22,13 @@ data class StaffUiState(
     val startHour: String = "9",
     val endHour: String = "18",
     val slotMinutes: String = "30",
+    val editingStaffMember: StaffMember? = null,
 )
 
 class StaffViewModel(
     getActiveStaff: GetActiveStaffUseCase,
     private val createStaffMember: CreateStaffMemberUseCase,
+    private val updateStaffMember: UpdateStaffMemberUseCase,
     private val deactivateStaffMember: DeactivateStaffMemberUseCase,
 ) : ViewModel() {
     private val formState = MutableStateFlow(StaffUiState())
@@ -49,8 +52,50 @@ class StaffViewModel(
         if (current.name.isBlank() || current.role.isBlank() || start !in 0..23 || end !in 1..24 || end <= start || slot <= 0) return
 
         viewModelScope.launch {
-            createStaffMember(current.name, current.role, current.phone, start, end, slot)
-            update { copy(name = "", role = "", phone = "", startHour = "9", endHour = "18", slotMinutes = "30") }
+            val editing = current.editingStaffMember
+            if (editing == null) {
+                createStaffMember(current.name, current.role, current.phone, start, end, slot)
+            } else {
+                updateStaffMember(
+                    editing.copy(
+                        name = current.name.trim(),
+                        role = current.role.trim(),
+                        phone = current.phone.trim().takeIf { it.isNotBlank() },
+                        workStartHour = start,
+                        workEndHour = end,
+                        slotMinutes = slot,
+                    ),
+                )
+            }
+            clearForm()
+        }
+    }
+
+    fun startEditing(member: StaffMember) {
+        update {
+            copy(
+                name = member.name,
+                role = member.role,
+                phone = member.phone.orEmpty(),
+                startHour = member.workStartHour.toString(),
+                endHour = member.workEndHour.toString(),
+                slotMinutes = member.slotMinutes.toString(),
+                editingStaffMember = member,
+            )
+        }
+    }
+
+    fun clearForm() {
+        update {
+            copy(
+                name = "",
+                role = "",
+                phone = "",
+                startHour = "9",
+                endHour = "18",
+                slotMinutes = "30",
+                editingStaffMember = null,
+            )
         }
     }
 

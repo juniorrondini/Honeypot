@@ -294,7 +294,12 @@ fun AppNavHost(
             composable(Routes.STAFF) {
                 val viewModel: StaffViewModel = viewModel(
                     factory = viewModelFactory {
-                        StaffViewModel(appContainer.getActiveStaff, appContainer.createStaffMember, appContainer.deactivateStaffMember)
+                        StaffViewModel(
+                            appContainer.getActiveStaff,
+                            appContainer.createStaffMember,
+                            appContainer.updateStaffMember,
+                            appContainer.deactivateStaffMember,
+                        )
                     },
                 )
                 StaffScreen(viewModel = viewModel)
