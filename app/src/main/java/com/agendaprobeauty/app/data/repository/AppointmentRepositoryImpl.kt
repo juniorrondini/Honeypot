@@ -22,6 +22,9 @@ class AppointmentRepositoryImpl(
 
     override suspend fun countAppointmentsBetween(startAt: Long, endAt: Long): Int = dao.countBetween(startAt, endAt)
 
+    override suspend fun countOverlappingForStaff(staffMemberId: Long, startAt: Long, endAt: Long): Int =
+        dao.countOverlappingForStaff(staffMemberId, startAt, endAt)
+
     override suspend fun saveAppointment(appointment: Appointment): Long = dao.upsert(appointment.toEntity())
 
     override suspend fun updateStatus(id: Long, status: AppointmentStatus, timestamp: Long) {

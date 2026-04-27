@@ -146,9 +146,23 @@ fun AppNavHost(
             }
             composable(Routes.APPOINTMENT_FORM) {
                 val viewModel: AppointmentFormViewModel = viewModel(
-                    factory = viewModelFactory { AppointmentFormViewModel(appContainer.createAppointment, appContainer.getActiveStaff) },
+                    factory = viewModelFactory {
+                        AppointmentFormViewModel(
+                            appContainer.createAppointment,
+                            appContainer.getDailyAppointments,
+                            appContainer.getActiveStaff,
+                            appContainer.searchClients,
+                            appContainer.getActiveServices,
+                        )
+                    },
                 )
-                AppointmentFormScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
+                AppointmentFormScreen(
+                    viewModel = viewModel,
+                    onBack = { navController.popBackStack() },
+                    onOpenClients = { navController.navigate(Routes.CLIENTS) },
+                    onOpenServices = { navController.navigate(Routes.SERVICES) },
+                    onOpenStaff = { navController.navigate(Routes.STAFF) },
+                )
             }
             composable(Routes.CLIENTS) {
                 val viewModel: ClientsViewModel = viewModel(

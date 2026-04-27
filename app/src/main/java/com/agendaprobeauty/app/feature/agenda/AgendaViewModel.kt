@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.agendaprobeauty.app.core.util.DateUtils
 import com.agendaprobeauty.app.domain.model.Appointment
+import com.agendaprobeauty.app.domain.model.AppointmentStatus
 import com.agendaprobeauty.app.domain.model.StaffMember
 import com.agendaprobeauty.app.domain.usecase.appointment.CancelAppointmentUseCase
 import com.agendaprobeauty.app.domain.usecase.appointment.CompleteAppointmentUseCase
@@ -79,7 +80,10 @@ class AgendaViewModel(
 
     private fun buildAvailableSlots(member: StaffMember?, appointments: List<Appointment>): List<String> {
         if (member == null) return emptyList()
-        val busyStarts = appointments.map { DateUtils.formatTime(it.startAt) }.toSet()
+        val busyStarts = appointments
+            .filter { it.status != AppointmentStatus.CANCELED && it.status != AppointmentStatus.NO_SHOW }
+            .map { DateUtils.formatTime(it.startAt) }
+            .toSet()
         val slots = mutableListOf<String>()
         var time = LocalTime.of(member.workStartHour, 0)
         val end = LocalTime.of(member.workEndHour, 0)

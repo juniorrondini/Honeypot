@@ -291,3 +291,15 @@ A proxima entrega de codigo deve ser:
 > Refatorar UX e fluxo de agendamento para usar profissional, cliente e servico cadastrados, com horarios livres reais e bloqueio de conflito.
 
 Essa mudanca aumenta o valor real do app mais do que qualquer melhoria visual isolada.
+
+## Atualizacao Implementada
+
+Depois desta auditoria, o fluxo de agendamento foi evoluido para:
+
+- selecionar profissional cadastrado;
+- selecionar cliente cadastrado;
+- selecionar servico cadastrado;
+- preencher preco e duracao a partir do servico;
+- mostrar horarios livres do profissional na data selecionada;
+- remover horarios ocupados da lista;
+- bloquear conflito de horario no dominio antes de salvar.

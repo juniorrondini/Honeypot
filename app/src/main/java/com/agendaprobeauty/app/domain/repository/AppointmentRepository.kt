@@ -9,6 +9,7 @@ interface AppointmentRepository {
     fun observeAppointmentsBetweenForStaff(staffMemberId: Long?, startAt: Long, endAt: Long): Flow<List<Appointment>>
     fun observeAppointment(id: Long): Flow<Appointment?>
     suspend fun countAppointmentsBetween(startAt: Long, endAt: Long): Int
+    suspend fun countOverlappingForStaff(staffMemberId: Long, startAt: Long, endAt: Long): Int
     suspend fun saveAppointment(appointment: Appointment): Long
     suspend fun updateStatus(id: Long, status: AppointmentStatus, timestamp: Long)
     suspend fun deleteAppointment(id: Long)

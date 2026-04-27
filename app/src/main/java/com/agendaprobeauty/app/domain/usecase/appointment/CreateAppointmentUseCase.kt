@@ -25,8 +25,21 @@ class CreateAppointmentUseCase(
         if (!subscriptionRepository.canCreateAppointmentThisMonth()) {
             return Result.failure(IllegalStateException("Limite gratuito mensal atingido."))
         }
+        if (staffMemberId == null) {
+            return Result.failure(IllegalStateException("Selecione um profissional."))
+        }
+        if (clientId == null) {
+            return Result.failure(IllegalStateException("Selecione um cliente cadastrado."))
+        }
+        if (serviceId == null) {
+            return Result.failure(IllegalStateException("Selecione um servico cadastrado."))
+        }
         val now = DateUtils.now()
         val endAt = startAt + durationMinutes * 60_000L
+        val overlapping = appointmentRepository.countOverlappingForStaff(staffMemberId, startAt, endAt)
+        if (overlapping > 0) {
+            return Result.failure(IllegalStateException("Horario indisponivel para este profissional."))
+        }
         val id = appointmentRepository.saveAppointment(
             Appointment(
                 staffMemberId = staffMemberId,

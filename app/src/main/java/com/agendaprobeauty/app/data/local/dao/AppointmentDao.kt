@@ -22,6 +22,24 @@ interface AppointmentDao {
     @Query("SELECT COUNT(*) FROM appointments WHERE startAt >= :startAt AND startAt < :endAt")
     suspend fun countBetween(startAt: Long, endAt: Long): Int
 
+    @Query(
+        """
+        SELECT COUNT(*) FROM appointments
+        WHERE staffMemberId = :staffMemberId
+        AND status != :canceledStatus
+        AND status != :noShowStatus
+        AND startAt < :endAt
+        AND endAt > :startAt
+        """,
+    )
+    suspend fun countOverlappingForStaff(
+        staffMemberId: Long,
+        startAt: Long,
+        endAt: Long,
+        canceledStatus: AppointmentStatus = AppointmentStatus.CANCELED,
+        noShowStatus: AppointmentStatus = AppointmentStatus.NO_SHOW,
+    ): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(appointment: AppointmentEntity): Long
 
