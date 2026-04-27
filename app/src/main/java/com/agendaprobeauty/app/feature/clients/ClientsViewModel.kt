@@ -6,6 +6,7 @@ import com.agendaprobeauty.app.domain.model.Client
 import com.agendaprobeauty.app.domain.usecase.client.CreateClientUseCase
 import com.agendaprobeauty.app.domain.usecase.client.DeleteClientUseCase
 import com.agendaprobeauty.app.domain.usecase.client.SearchClientsUseCase
+import com.agendaprobeauty.app.domain.usecase.client.UpdateClientUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,12 +22,14 @@ data class ClientsUiState(
     val name: String = "",
     val phone: String = "",
     val notes: String = "",
+    val editingClient: Client? = null,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ClientsViewModel(
     private val searchClients: SearchClientsUseCase,
     private val createClient: CreateClientUseCase,
+    private val updateClient: UpdateClientUseCase,
     private val deleteClient: DeleteClientUseCase,
 ) : ViewModel() {
     private val formState = MutableStateFlow(ClientsUiState())
@@ -46,9 +49,35 @@ class ClientsViewModel(
         val current = formState.value
         if (current.name.isBlank()) return
         viewModelScope.launch {
-            createClient(current.name, current.phone, current.notes)
-            update { copy(name = "", phone = "", notes = "") }
+            val editing = current.editingClient
+            if (editing == null) {
+                createClient(current.name, current.phone, current.notes)
+            } else {
+                updateClient(
+                    editing.copy(
+                        name = current.name,
+                        phone = current.phone.ifBlank { null },
+                        notes = current.notes.ifBlank { null },
+                    ),
+                )
+            }
+            clearForm()
         }
+    }
+
+    fun startEditing(client: Client) {
+        update {
+            copy(
+                name = client.name,
+                phone = client.phone.orEmpty(),
+                notes = client.notes.orEmpty(),
+                editingClient = client,
+            )
+        }
+    }
+
+    fun clearForm() {
+        update { copy(name = "", phone = "", notes = "", editingClient = null) }
     }
 
     fun delete(id: Long) {

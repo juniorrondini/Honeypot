@@ -3,11 +3,11 @@ package com.agendaprobeauty.app.feature.dashboard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
@@ -43,7 +43,7 @@ fun DashboardScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         item {
             Row(
@@ -53,76 +53,97 @@ fun DashboardScreen(
             ) {
                 Column {
                     Text("AgendaPro Beauty", style = MaterialTheme.typography.headlineSmall)
-                    Text("Empresa, equipe, clientes e agenda", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("O que ganhou, quem atende e o que vem a seguir", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(if (state.isAdmin) "Modo Administrador" else "Modo Profissional", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 IconButton(onClick = onOpenSettings) {
-                    Icon(Icons.Outlined.Settings, contentDescription = "Configurações")
+                    Icon(Icons.Outlined.Settings, contentDescription = "Configuracoes")
                 }
             }
         }
         item {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(18.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Text("Painel da empresa", style = MaterialTheme.typography.labelLarge)
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Faturamento", style = MaterialTheme.typography.labelLarge)
                     Text(MoneyUtils.format(state.revenueTodayCents), style = MaterialTheme.typography.headlineMedium)
-                    Text("Faturamento de hoje", color = MaterialTheme.colorScheme.onPrimaryContainer)
-                    Text(
-                        "Plano grátis: ${state.planStatus.currentMonthAppointments}/${state.planStatus.freeMonthlyLimit} agendamentos no mês",
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    )
+                    Text("Hoje | ${MoneyUtils.format(state.revenueMonthCents)} no mes")
+                    Text("${state.planStatus.currentMonthAppointments}/${state.planStatus.freeMonthlyLimit} agendamentos no plano gratis")
+                }
+            }
+        }
+        if (state.freeLimitWarning) {
+            item {
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
+                    Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text("Limite gratis perto do fim", style = MaterialTheme.typography.titleMedium)
+                        Text("Considere o Premium para agenda ilimitada.", color = MaterialTheme.colorScheme.onErrorContainer)
+                        OutlinedButton(onClick = onOpenPremium, modifier = Modifier.fillMaxWidth()) { Text("Ver Premium") }
+                    }
                 }
             }
         }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Button(onClick = onCreateAppointment, modifier = Modifier.weight(1f)) {
-                    Text("Agendar")
-                }
-                OutlinedButton(onClick = onOpenStaff, modifier = Modifier.weight(1f)) {
-                    Text("Equipe")
+                MetricCard("Hoje", "${state.scheduledToday} agenda", Modifier.weight(1f))
+                MetricCard("Concluidos", state.completedToday.toString(), Modifier.weight(1f))
+            }
+        }
+        item {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                MetricCard("Clientes", state.clients.size.toString(), Modifier.weight(1f))
+                if (state.isAdmin) {
+                    MetricCard("Equipe", state.staff.size.toString(), Modifier.weight(1f))
+                    MetricCard("Servicos", state.services.size.toString(), Modifier.weight(1f))
                 }
             }
         }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedButton(onClick = onOpenFinance, modifier = Modifier.weight(1f)) {
-                    Text("Financeiro")
+                Button(onClick = onCreateAppointment, modifier = Modifier.weight(1f)) { Text("Agendar") }
+                if (state.isAdmin) {
+                    OutlinedButton(onClick = onOpenStaff, modifier = Modifier.weight(1f)) { Text("Equipe") }
                 }
-                OutlinedButton(onClick = onOpenPremium, modifier = Modifier.weight(1f)) {
-                    Text("Premium")
+            }
+        }
+        if (state.isAdmin) {
+            item {
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    OutlinedButton(onClick = onOpenFinance, modifier = Modifier.weight(1f)) { Text("Financeiro") }
+                    OutlinedButton(onClick = onOpenPremium, modifier = Modifier.weight(1f)) { Text("Premium") }
                 }
             }
         }
         item {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text("Atendimentos de hoje", style = MaterialTheme.typography.titleMedium)
-                Text("Aqui aparecem os clientes agendados por profissional.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
+            Text("Proximos atendimentos", style = MaterialTheme.typography.titleMedium)
         }
-        if (state.todayAppointments.isEmpty()) {
+        if (state.nextAppointments.isEmpty()) {
             item {
                 Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text("Nenhum atendimento hoje", style = MaterialTheme.typography.titleMedium)
-                        Text("Crie um agendamento escolhendo profissional, cliente, serviço e horário.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Sem proximos atendimentos hoje", style = MaterialTheme.typography.titleMedium)
+                        Text("Use o botao Agendar para preencher a agenda.")
                     }
                 }
             }
         } else {
-            items(state.todayAppointments.take(5), key = { it.id }) { appointment ->
+            items(state.nextAppointments, key = { it.id }) { appointment ->
                 Card {
                     Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("${DateUtils.formatTime(appointment.startAt)} · ${appointment.clientNameSnapshot}", style = MaterialTheme.typography.titleMedium)
-                        Text("Profissional: ${appointment.staffMemberNameSnapshot}", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("Serviço: ${appointment.serviceNameSnapshot}", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("${DateUtils.formatTime(appointment.startAt)} | ${appointment.clientNameSnapshot}", style = MaterialTheme.typography.titleMedium)
+                        Text("${appointment.staffMemberNameSnapshot} | ${appointment.serviceNameSnapshot}", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun MetricCard(label: String, value: String, modifier: Modifier = Modifier) {
+    Card(modifier = modifier, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh)) {
+        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(value, style = MaterialTheme.typography.titleLarge)
+            Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

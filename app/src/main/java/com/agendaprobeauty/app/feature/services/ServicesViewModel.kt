@@ -7,6 +7,7 @@ import com.agendaprobeauty.app.domain.model.BeautyService
 import com.agendaprobeauty.app.domain.usecase.service.CreateServiceUseCase
 import com.agendaprobeauty.app.domain.usecase.service.DeactivateServiceUseCase
 import com.agendaprobeauty.app.domain.usecase.service.GetAllServicesUseCase
+import com.agendaprobeauty.app.domain.usecase.service.UpdateServiceUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,11 +20,13 @@ data class ServicesUiState(
     val name: String = "",
     val price: String = "",
     val duration: String = "30",
+    val editingService: BeautyService? = null,
 )
 
 class ServicesViewModel(
     getAllServices: GetAllServicesUseCase,
     private val createService: CreateServiceUseCase,
+    private val updateService: UpdateServiceUseCase,
     private val deactivateService: DeactivateServiceUseCase,
 ) : ViewModel() {
     private val formState = MutableStateFlow(ServicesUiState())
@@ -41,9 +44,35 @@ class ServicesViewModel(
         val duration = current.duration.toIntOrNull() ?: return
         if (current.name.isBlank() || duration <= 0) return
         viewModelScope.launch {
-            createService(current.name, MoneyUtils.parseToCents(current.price), duration)
-            update { copy(name = "", price = "", duration = "30") }
+            val editing = current.editingService
+            if (editing == null) {
+                createService(current.name, MoneyUtils.parseToCents(current.price), duration)
+            } else {
+                updateService(
+                    editing.copy(
+                        name = current.name,
+                        priceCents = MoneyUtils.parseToCents(current.price),
+                        durationMinutes = duration,
+                    ),
+                )
+            }
+            clearForm()
         }
+    }
+
+    fun startEditing(service: BeautyService) {
+        update {
+            copy(
+                name = service.name,
+                price = MoneyUtils.format(service.priceCents).replace("R$", "").trim(),
+                duration = service.durationMinutes.toString(),
+                editingService = service,
+            )
+        }
+    }
+
+    fun clearForm() {
+        update { copy(name = "", price = "", duration = "30", editingService = null) }
     }
 
     fun deactivate(id: Long) {

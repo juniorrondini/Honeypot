@@ -9,4 +9,7 @@ class GetFinanceEntriesUseCase(
 ) {
     operator fun invoke(date: LocalDate) =
         repository.observeEntriesBetween(DateUtils.startOfDay(date), DateUtils.endOfDay(date))
+
+    fun forCurrentMonth() =
+        repository.observeEntriesBetween(DateUtils.startOfCurrentMonth(), DateUtils.startOfNextMonth())
 }

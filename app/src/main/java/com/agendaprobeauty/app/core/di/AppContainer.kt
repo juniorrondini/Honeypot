@@ -26,12 +26,14 @@ import com.agendaprobeauty.app.domain.usecase.appointment.CompleteAppointmentUse
 import com.agendaprobeauty.app.domain.usecase.appointment.CreateAppointmentUseCase
 import com.agendaprobeauty.app.domain.usecase.appointment.GetDailyAppointmentsUseCase
 import com.agendaprobeauty.app.domain.usecase.appointment.GetAppointmentUseCase
+import com.agendaprobeauty.app.domain.usecase.appointment.GetMonthlyAppointmentsUseCase
 import com.agendaprobeauty.app.domain.usecase.appointment.UpdateAppointmentUseCase
 import com.agendaprobeauty.app.domain.usecase.client.CreateClientUseCase
 import com.agendaprobeauty.app.domain.usecase.client.DeleteClientUseCase
 import com.agendaprobeauty.app.domain.usecase.client.GetClientAppointmentsUseCase
 import com.agendaprobeauty.app.domain.usecase.client.GetClientUseCase
 import com.agendaprobeauty.app.domain.usecase.client.SearchClientsUseCase
+import com.agendaprobeauty.app.domain.usecase.client.UpdateClientUseCase
 import com.agendaprobeauty.app.domain.usecase.finance.CreateManualExpenseUseCase
 import com.agendaprobeauty.app.domain.usecase.finance.GetFinanceEntriesUseCase
 import com.agendaprobeauty.app.domain.usecase.finance.GetFinanceSummaryUseCase
@@ -41,6 +43,7 @@ import com.agendaprobeauty.app.domain.usecase.service.CreateServiceUseCase
 import com.agendaprobeauty.app.domain.usecase.service.DeactivateServiceUseCase
 import com.agendaprobeauty.app.domain.usecase.service.GetActiveServicesUseCase
 import com.agendaprobeauty.app.domain.usecase.service.GetAllServicesUseCase
+import com.agendaprobeauty.app.domain.usecase.service.UpdateServiceUseCase
 import com.agendaprobeauty.app.domain.usecase.staff.CreateStaffMemberUseCase
 import com.agendaprobeauty.app.domain.usecase.staff.DeactivateStaffMemberUseCase
 import com.agendaprobeauty.app.domain.usecase.staff.GetActiveStaffUseCase
@@ -79,14 +82,17 @@ class AppContainer(
     val getClient = GetClientUseCase(clientRepository)
     val getClientAppointments = GetClientAppointmentsUseCase(appointmentRepository)
     val createClient = CreateClientUseCase(clientRepository)
+    val updateClient = UpdateClientUseCase(clientRepository)
     val deleteClient = DeleteClientUseCase(clientRepository)
 
     val getActiveServices = GetActiveServicesUseCase(serviceRepository)
     val getAllServices = GetAllServicesUseCase(serviceRepository)
     val createService = CreateServiceUseCase(serviceRepository)
+    val updateService = UpdateServiceUseCase(serviceRepository)
     val deactivateService = DeactivateServiceUseCase(serviceRepository)
 
     val getDailyAppointments = GetDailyAppointmentsUseCase(appointmentRepository)
+    val getMonthlyAppointments = GetMonthlyAppointmentsUseCase(appointmentRepository)
     val getAppointment = GetAppointmentUseCase(appointmentRepository)
     val createAppointment = CreateAppointmentUseCase(appointmentRepository, subscriptionRepository)
     val updateAppointment = UpdateAppointmentUseCase(appointmentRepository)

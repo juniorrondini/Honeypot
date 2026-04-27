@@ -2,10 +2,10 @@ package com.agendaprobeauty.app.core.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.RoomService
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -13,26 +13,29 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.agendaprobeauty.app.core.di.AppContainer
 import com.agendaprobeauty.app.core.di.viewModelFactory
+import com.agendaprobeauty.app.domain.model.UserMode
 import com.agendaprobeauty.app.feature.agenda.AgendaScreen
 import com.agendaprobeauty.app.feature.agenda.AgendaViewModel
 import com.agendaprobeauty.app.feature.appointmentedit.AppointmentEditScreen
 import com.agendaprobeauty.app.feature.appointmentedit.AppointmentEditViewModel
 import com.agendaprobeauty.app.feature.appointmentform.AppointmentFormScreen
 import com.agendaprobeauty.app.feature.appointmentform.AppointmentFormViewModel
-import com.agendaprobeauty.app.feature.clients.ClientsScreen
-import com.agendaprobeauty.app.feature.clients.ClientsViewModel
 import com.agendaprobeauty.app.feature.clientdetail.ClientDetailScreen
 import com.agendaprobeauty.app.feature.clientdetail.ClientDetailViewModel
+import com.agendaprobeauty.app.feature.clients.ClientsScreen
+import com.agendaprobeauty.app.feature.clients.ClientsViewModel
 import com.agendaprobeauty.app.feature.dashboard.DashboardScreen
 import com.agendaprobeauty.app.feature.dashboard.DashboardViewModel
 import com.agendaprobeauty.app.feature.finance.FinanceScreen
@@ -40,6 +43,7 @@ import com.agendaprobeauty.app.feature.finance.FinanceViewModel
 import com.agendaprobeauty.app.feature.onboarding.OnboardingScreen
 import com.agendaprobeauty.app.feature.onboarding.OnboardingViewModel
 import com.agendaprobeauty.app.feature.premium.PremiumScreen
+import com.agendaprobeauty.app.feature.premium.PremiumViewModel
 import com.agendaprobeauty.app.feature.services.ServicesScreen
 import com.agendaprobeauty.app.feature.services.ServicesViewModel
 import com.agendaprobeauty.app.feature.settings.SettingsScreen
@@ -53,12 +57,29 @@ private data class BottomDestination(
     val icon: @Composable () -> Unit,
 )
 
-private val bottomDestinations = listOf(
-    BottomDestination(Routes.DASHBOARD, "Início") { Icon(Icons.Outlined.Home, contentDescription = null) },
-    BottomDestination(Routes.AGENDA, "Agenda") { Icon(Icons.Outlined.CalendarToday, contentDescription = null) },
-    BottomDestination(Routes.CLIENTS, "Clientes") { Icon(Icons.Outlined.Groups, contentDescription = null) },
-    BottomDestination(Routes.SERVICES, "Serviços") { Icon(Icons.Outlined.RoomService, contentDescription = null) },
-    BottomDestination(Routes.STAFF, "Equipe") { Icon(Icons.Outlined.Badge, contentDescription = null) },
+private fun bottomDestinationsFor(userMode: UserMode) = buildList {
+    add(BottomDestination(Routes.DASHBOARD, "Inicio") { Icon(Icons.Outlined.Home, contentDescription = null) })
+    add(BottomDestination(Routes.AGENDA, "Agenda") { Icon(Icons.Outlined.CalendarToday, contentDescription = null) })
+    add(BottomDestination(Routes.CLIENTS, "Clientes") { Icon(Icons.Outlined.Groups, contentDescription = null) })
+    if (userMode == UserMode.ADMIN) {
+        add(BottomDestination(Routes.SERVICES, "Servicos") { Icon(Icons.Outlined.RoomService, contentDescription = null) })
+        add(BottomDestination(Routes.STAFF, "Equipe") { Icon(Icons.Outlined.Badge, contentDescription = null) })
+    }
+}
+
+private val bottomRoutes = setOf(
+    Routes.DASHBOARD,
+    Routes.AGENDA,
+    Routes.CLIENTS,
+    Routes.SERVICES,
+    Routes.STAFF,
+)
+
+private val adminRoutes = setOf(
+    Routes.SERVICES,
+    Routes.STAFF,
+    Routes.FINANCE,
+    Routes.PREMIUM,
 )
 
 @Composable
@@ -70,7 +91,18 @@ fun AppNavHost(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val currentRoute = currentDestination?.route
-    val showBottomBar = currentRoute in bottomDestinations.map { it.route }
+    val userMode by appContainer.settingsRepository.userMode.collectAsStateWithLifecycle(initialValue = UserMode.ADMIN)
+    val bottomDestinations = bottomDestinationsFor(userMode)
+    val showBottomBar = currentRoute in bottomRoutes
+
+    LaunchedEffect(userMode, currentRoute) {
+        if (userMode == UserMode.PROFESSIONAL && currentRoute in adminRoutes) {
+            navController.navigate(Routes.DASHBOARD) {
+                popUpTo(Routes.DASHBOARD) { inclusive = false }
+                launchSingleTop = true
+            }
+        }
+    }
 
     Scaffold(
         modifier = modifier,
@@ -121,8 +153,13 @@ fun AppNavHost(
                     factory = viewModelFactory {
                         DashboardViewModel(
                             appContainer.getDailyAppointments,
+                            appContainer.getMonthlyAppointments,
                             appContainer.getCurrentPlan,
                             appContainer.getFinanceSummary,
+                            appContainer.searchClients,
+                            appContainer.getActiveStaff,
+                            appContainer.getAllServices,
+                            appContainer.settingsRepository,
                         )
                     },
                 )
@@ -210,7 +247,12 @@ fun AppNavHost(
             composable(Routes.CLIENTS) {
                 val viewModel: ClientsViewModel = viewModel(
                     factory = viewModelFactory {
-                        ClientsViewModel(appContainer.searchClients, appContainer.createClient, appContainer.deleteClient)
+                        ClientsViewModel(
+                            appContainer.searchClients,
+                            appContainer.createClient,
+                            appContainer.updateClient,
+                            appContainer.deleteClient,
+                        )
                     },
                 )
                 ClientsScreen(
@@ -239,7 +281,12 @@ fun AppNavHost(
             composable(Routes.SERVICES) {
                 val viewModel: ServicesViewModel = viewModel(
                     factory = viewModelFactory {
-                        ServicesViewModel(appContainer.getAllServices, appContainer.createService, appContainer.deactivateService)
+                        ServicesViewModel(
+                            appContainer.getAllServices,
+                            appContainer.createService,
+                            appContainer.updateService,
+                            appContainer.deactivateService,
+                        )
                     },
                 )
                 ServicesScreen(viewModel = viewModel)
@@ -269,7 +316,12 @@ fun AppNavHost(
                 SettingsScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
             }
             composable(Routes.PREMIUM) {
-                PremiumScreen(onBack = { navController.popBackStack() })
+                val viewModel: PremiumViewModel = viewModel(
+                    factory = viewModelFactory {
+                        PremiumViewModel(appContainer.getCurrentPlan, appContainer.settingsRepository)
+                    },
+                )
+                PremiumScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
             }
         }
     }

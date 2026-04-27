@@ -66,7 +66,7 @@ fun AppointmentFormScreen(
                             FilterChip(
                                 selected = state.selectedStaffMemberId == member.id,
                                 onClick = { viewModel.selectStaff(member.id) },
-                                label = { Text("${member.name} · ${member.role}") },
+                                label = { Text("${member.name} | ${member.role}") },
                             )
                         }
                     }
@@ -111,7 +111,7 @@ fun AppointmentFormScreen(
                                 selected = state.selectedServiceId == service.id,
                                 onClick = { viewModel.selectService(service.id) },
                                 label = {
-                                    Text("${service.name} · ${MoneyUtils.format(service.priceCents)} · ${service.durationMinutes} min")
+                                    Text("${service.name} | ${MoneyUtils.format(service.priceCents)} | ${service.durationMinutes} min")
                                 },
                             )
                         }

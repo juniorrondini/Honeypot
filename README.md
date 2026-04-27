@@ -50,10 +50,11 @@ Essa separacao evita confusao entre "quem e a empresa", "quem atende" e "quem e 
 
 - Onboarding da empresa e primeiro profissional.
 - Dashboard com visao da empresa.
+- Modo Administrador e Modo Profissional com navegacao simplificada.
 - Cadastro de equipe/profissionais.
-- Cadastro de clientes.
+- Cadastro e edicao de clientes.
 - Detalhe do cliente com historico, total gasto, ultima visita e agendamento rapido.
-- Cadastro de servicos.
+- Cadastro, edicao e desativacao de servicos.
 - Agenda diaria.
 - Filtro da agenda por profissional.
 - Visualizacao de horarios disponiveis por profissional.
@@ -63,8 +64,9 @@ Essa separacao evita confusao entre "quem e a empresa", "quem atende" e "quem e 
 - Bloqueio de conflito de horario por profissional.
 - Cancelamento e conclusao de agendamentos.
 - Lancamento automatico de receita ao concluir atendimento.
-- Financeiro simples com resumo do dia, resumo do mes e despesas manuais.
-- Controle base do plano gratis: 30 agendamentos por mes.
+- Financeiro com resumo do dia, resumo do mes, receitas por servico, despesas por categoria e movimentacoes do mes.
+- Controle real do plano gratis: 30 agendamentos por mes.
+- Tela Premium com ativacao local para testar limite gratis vs agenda ilimitada.
 
 ## Monetizacao Planejada
 
@@ -227,18 +229,17 @@ E:\Android\Sdk\platform-tools\adb.exe shell monkey -p com.agendaprobeauty.app -c
 
 ## Roadmap
 
-- Melhorar edicao de clientes e segmentacao de clientes inativos.
-- Historico por cliente.
-- Relatorios financeiros por periodo.
-- Tela premium com bloqueios reais.
 - Integracao futura com Google Play Billing.
 - Backup e sincronizacao futura.
 - Lembretes via notificacao.
+- Permissoes reais por login para administradores e profissionais.
+- Relatorios financeiros por periodo customizado.
+- Segmentacao de clientes inativos e recorrentes.
 - Politica de privacidade e preparacao para Play Store.
 
 ## Status
 
-Projeto em MVP tecnico. A base Android, arquitetura, banco local, equipe, agenda e financeiro ja estao funcionando localmente.
+Projeto em MVP funcional local-first. A base Android, arquitetura, banco local, equipe, clientes, servicos, agenda, financeiro, premium local e modo de usuario ja estao funcionando localmente.
 
 ## Repositorio
 

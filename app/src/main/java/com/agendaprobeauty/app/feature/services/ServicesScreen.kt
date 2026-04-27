@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -36,46 +37,74 @@ fun ServicesScreen(
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Serviços", style = MaterialTheme.typography.headlineSmall)
+        Text("Servicos", style = MaterialTheme.typography.headlineSmall)
+        Text("Defina o catalogo vendido pela empresa e usado nos horarios disponiveis.", color = MaterialTheme.colorScheme.onSurfaceVariant)
         OutlinedTextField(
             value = state.name,
             onValueChange = viewModel::updateName,
-            label = { Text("Nome do serviço") },
+            label = { Text("Nome do servico") },
             modifier = Modifier.fillMaxWidth(),
         )
         OutlinedTextField(
             value = state.price,
             onValueChange = viewModel::updatePrice,
-            label = { Text("Preço") },
+            label = { Text("Preco") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             modifier = Modifier.fillMaxWidth(),
         )
         OutlinedTextField(
             value = state.duration,
             onValueChange = viewModel::updateDuration,
-            label = { Text("Duração em minutos") },
+            label = { Text("Duracao em minutos") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
         )
-        Button(onClick = viewModel::saveService, modifier = Modifier.fillMaxWidth()) {
-            Text("Salvar serviço")
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            Button(onClick = viewModel::saveService, modifier = Modifier.weight(1f)) {
+                Text(if (state.editingService == null) "Salvar servico" else "Salvar alteracoes")
+            }
+            if (state.editingService != null) {
+                OutlinedButton(onClick = viewModel::clearForm, modifier = Modifier.weight(1f)) {
+                    Text("Cancelar")
+                }
+            }
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(state.services, key = { it.id }) { service ->
-                Card {
-                    Row(
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (service.isActive) {
+                            MaterialTheme.colorScheme.surface
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainerHigh
+                        },
+                    ),
+                ) {
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
                         Column {
-                            Text(service.name)
-                            Text("${MoneyUtils.format(service.priceCents)} · ${service.durationMinutes} min")
+                            Text(service.name, style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                "${MoneyUtils.format(service.priceCents)} | ${service.durationMinutes} min",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Text(
+                                if (service.isActive) "Ativo para novos agendamentos" else "Inativo",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
                         }
-                        if (service.isActive) {
-                            OutlinedButton(onClick = { viewModel.deactivate(service.id) }) {
-                                Text("Desativar")
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                            OutlinedButton(onClick = { viewModel.startEditing(service) }, modifier = Modifier.weight(1f)) {
+                                Text("Editar")
+                            }
+                            if (service.isActive) {
+                                OutlinedButton(onClick = { viewModel.deactivate(service.id) }, modifier = Modifier.weight(1f)) {
+                                    Text("Desativar")
+                                }
                             }
                         }
                     }
