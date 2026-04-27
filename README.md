@@ -30,9 +30,11 @@
 - [Monetizacao](#monetizacao)
 - [Stack Tecnica](#stack-tecnica)
 - [Arquitetura](#arquitetura)
+- [Analise Tecnica Atual](#analise-tecnica-atual)
 - [Estrutura de Pastas](#estrutura-de-pastas)
 - [Banco Local](#banco-local)
 - [Como Rodar](#como-rodar)
+- [Rodar no Mac com Android Studio](#rodar-no-mac-com-android-studio)
 - [Testar no Emulador](#testar-no-emulador)
 - [Checklist de QA](#checklist-de-qa)
 - [Preparacao para Play Store](#preparacao-para-play-store)
@@ -266,6 +268,44 @@ Principios aplicados:
 - Modelos de dominio ficam separados de entidades Room.
 - DataStore guarda preferencias e estado de plano/modo.
 
+## Analise Tecnica Atual
+
+O projeto esta em um bom ponto de MVP Android local-first. Ele ja tem as pecas principais de um produto real: persistencia local, navegacao, telas separadas por dominio, use cases para regra de negocio, repositories e modelos de dominio separados das entidades do banco.
+
+### Pontos fortes
+
+- Arquitetura simples e compreensivel.
+- Separacao clara entre `data`, `domain`, `feature` e `core`.
+- Room usado para dados estruturados.
+- DataStore usado para preferencias e estado simples.
+- Compose com Material 3.
+- Navigation Compose centralizada no `AppNavHost`.
+- ViewModels mantendo estado de tela com Flow/StateFlow.
+- Seed de dados para testar sem cadastro manual.
+- Regra real de limite gratis por quantidade de agendamentos no mes.
+- Equipe, clientes, servicos, agenda, financeiro e premium local ja integrados.
+
+### Pontos de atencao
+
+- O app ainda nao tem login real.
+- O modo Administrador/Profissional e local, nao e permissao segura por usuario autenticado.
+- O banco usa `fallbackToDestructiveMigration`, bom para desenvolvimento, ruim para producao.
+- Os dados ainda ficam apenas no aparelho.
+- Ainda nao existe Google Play Billing.
+- Ainda nao existem testes automatizados suficientes.
+- O seed de demonstracao e util para desenvolvimento, mas deve ser controlado em build de producao.
+
+### Proximas decisoes tecnicas importantes
+
+| Area | Decisao recomendada |
+| --- | --- |
+| Login | Criar usuarios com papeis `OWNER`, `ADMIN`, `STAFF` e futuramente `CLIENT`. |
+| Backend | Definir se sera Firebase, Supabase, API propria ou outro backend. |
+| Sincronizacao | Planejar conflito offline/online antes de sincronizar agenda. |
+| Pagamentos | Integrar Google Play Billing para assinatura premium real. |
+| Banco | Trocar destructive migration por migrations versionadas. |
+| Testes | Comecar por use cases de agenda, conflito de horario, financeiro e limite gratis. |
+
 ## Estrutura de Pastas
 
 ```text
@@ -356,6 +396,343 @@ APK gerado:
 
 ```text
 app/build/outputs/apk/debug/app-debug.apk
+```
+
+## Rodar no Mac com Android Studio
+
+Esta secao e bem detalhada de proposito. Ela assume que a pessoa nunca rodou um projeto Android antes.
+
+### O que voce precisa ter no Mac
+
+Voce precisa de:
+
+- Um Mac com internet.
+- Android Studio instalado.
+- O projeto AgendaPro Beauty baixado no Mac.
+- Um emulador Android criado dentro do Android Studio.
+
+### Passo 1: instalar o Android Studio
+
+1. Abra o navegador no Mac.
+2. Pesquise por `Android Studio download`.
+3. Entre no site oficial de desenvolvedores Android.
+4. Baixe o Android Studio para macOS.
+5. Abra o arquivo baixado.
+6. Arraste o Android Studio para a pasta `Applications`.
+7. Abra o Android Studio pela pasta `Applications`.
+8. Se o Mac perguntar se voce tem certeza que quer abrir, confirme.
+
+Na primeira abertura, o Android Studio pode perguntar se voce quer importar configuracoes antigas. Se voce nunca usou Android Studio antes, escolha:
+
+```text
+Do not import settings
+```
+
+Depois continue no assistente inicial.
+
+### Passo 2: instalar o SDK pelo assistente inicial
+
+Quando o Android Studio abrir pela primeira vez:
+
+1. Clique em `Next`.
+2. Escolha `Standard`, se aparecer essa opcao.
+3. Clique em `Next`.
+4. Escolha o tema visual que preferir.
+5. Clique em `Next`.
+6. Na tela de componentes, deixe marcado:
+   - Android SDK
+   - Android SDK Platform
+   - Android Virtual Device
+   - Performance ou Emulator, se aparecer
+7. Clique em `Next`.
+8. Aceite as licencas.
+9. Clique em `Finish`.
+10. Espere baixar tudo.
+
+Esse download pode demorar. Nao feche o Android Studio enquanto ele estiver baixando.
+
+### Passo 3: abrir o projeto
+
+Depois que o Android Studio terminar a instalacao inicial:
+
+1. Na tela inicial, clique em `Open`.
+2. Escolha a pasta do projeto.
+3. A pasta correta e a que contem estes arquivos:
+
+```text
+README.md
+settings.gradle.kts
+build.gradle.kts
+gradlew
+app/
+```
+
+Se o projeto estiver em `Downloads`, por exemplo, selecione a pasta:
+
+```text
+Downloads/Honeypot
+```
+
+Nao selecione a pasta `app`. Selecione a pasta principal do projeto.
+
+### Passo 4: esperar o Android Studio sincronizar
+
+Quando o projeto abrir, o Android Studio vai sincronizar o Gradle automaticamente.
+
+Voce pode ver mensagens como:
+
+```text
+Syncing Gradle
+Downloading dependencies
+Indexing
+```
+
+Espere terminar.
+
+Nao clique em varias coisas enquanto ele sincroniza. A primeira vez pode demorar varios minutos.
+
+Quando estiver pronto, o Android Studio normalmente mostra algo como:
+
+```text
+Gradle sync finished
+```
+
+Se aparecer um botao `Sync Now`, clique nele.
+
+### Passo 5: conferir se o SDK foi encontrado
+
+O Android Studio normalmente cria o arquivo `local.properties` sozinho.
+
+Esse arquivo nao vai para o Git, porque depende da maquina de cada pessoa.
+
+No Mac, ele costuma ficar assim:
+
+```properties
+sdk.dir=/Users/SEU_USUARIO/Library/Android/sdk
+```
+
+Voce nao precisa escrever isso manualmente se o Android Studio ja reconheceu o SDK.
+
+Se der erro dizendo que nao encontrou SDK:
+
+1. Clique em `Android Studio`.
+2. Clique em `Settings` ou `Preferences`.
+3. Abra `Languages & Frameworks`.
+4. Abra `Android SDK`.
+5. Veja o caminho exibido em `Android SDK Location`.
+6. Volte no projeto.
+7. Crie ou ajuste o arquivo `local.properties` na raiz do projeto.
+
+Exemplo:
+
+```properties
+sdk.dir=/Users/maria/Library/Android/sdk
+```
+
+Troque `maria` pelo nome do usuario do Mac.
+
+### Passo 6: criar um emulador Android
+
+Agora voce precisa criar um celular falso dentro do computador.
+
+No Android Studio:
+
+1. Procure no canto direito por `Device Manager`.
+2. Se nao aparecer, va em `Tools`.
+3. Clique em `Device Manager`.
+4. Clique em `Create Device`.
+5. Escolha um modelo simples, por exemplo:
+
+```text
+Pixel 7
+```
+
+ou:
+
+```text
+Pixel 6
+```
+
+6. Clique em `Next`.
+7. Escolha uma imagem Android recente.
+8. Se aparecer botao `Download`, clique em `Download`.
+9. Aceite a licenca.
+10. Espere baixar.
+11. Depois do download, clique em `Next`.
+12. De um nome para o emulador, por exemplo:
+
+```text
+AgendaPro_Mac
+```
+
+13. Clique em `Finish`.
+
+### Passo 7: ligar o emulador
+
+No `Device Manager`:
+
+1. Encontre o emulador criado.
+2. Clique no botao de play.
+3. Espere o Android abrir.
+
+Importante: espere aparecer a tela inicial do Android. Nao tente rodar o app enquanto o emulador ainda esta ligando.
+
+### Passo 8: escolher o app para rodar
+
+Na parte de cima do Android Studio, deve aparecer uma barra com:
+
+- o nome da configuracao, normalmente `app`;
+- o nome do emulador, por exemplo `AgendaPro_Mac`;
+- um botao de play verde.
+
+Confira:
+
+1. No seletor de configuracao, escolha `app`.
+2. No seletor de dispositivo, escolha o emulador.
+3. Clique no botao verde de play.
+
+O Android Studio vai:
+
+1. compilar o projeto;
+2. instalar o app no emulador;
+3. abrir o AgendaPro Beauty.
+
+Na primeira vez pode demorar.
+
+### Passo 9: confirmar se os dados de teste apareceram
+
+Quando o app abrir, ele deve criar automaticamente dados de demonstracao:
+
+| Tipo | Dados esperados |
+| --- | --- |
+| Empresa | Honeypot Beauty Studio |
+| Profissionais | Lucas Andrade, Marina Costa, Bianca Lima |
+| Servicos | Corte masculino, Barba, Corte + barba, Escova, Manicure |
+| Clientes | Rafael Souza, Camila Nunes, Thiago Martins, Juliana Rocha |
+
+Se o app abrir direto no Dashboard, esta correto.
+
+Se ele abrir no onboarding, tambem da para continuar preenchendo manualmente, mas em uma instalacao limpa o seed deve pular o onboarding.
+
+### Passo 10: testar o fluxo principal
+
+Para testar como usuario:
+
+1. Abra `Equipe`.
+2. Veja os profissionais cadastrados.
+3. Edite o horario de um profissional.
+4. Abra `Servicos`.
+5. Veja os servicos cadastrados.
+6. Abra `Clientes`.
+7. Veja os clientes cadastrados.
+8. Abra `Agenda`.
+9. Clique para criar um agendamento.
+10. Escolha profissional, cliente, servico, data e horario.
+11. Salve.
+12. Volte para a agenda.
+13. Conclua um atendimento.
+14. Abra `Financeiro`.
+15. Confirme se a receita apareceu.
+
+### Passo 11: limpar o app e recriar dados demo
+
+Se voce mexeu muito e quer voltar para o inicio, desinstale o app do emulador.
+
+Jeito facil:
+
+1. No emulador, encontre o icone do app.
+2. Clique e segure.
+3. Escolha `Uninstall`.
+4. Confirme.
+5. Volte no Android Studio.
+6. Clique no play verde novamente.
+
+Quando instalar de novo, o app cria os dados de demonstracao novamente.
+
+Jeito pelo Terminal do Mac:
+
+1. Abra o app `Terminal`.
+2. Rode:
+
+```bash
+cd CAMINHO/DA/PASTA/Honeypot
+```
+
+Exemplo:
+
+```bash
+cd ~/Downloads/Honeypot
+```
+
+3. Rode:
+
+```bash
+adb uninstall com.agendaprobeauty.app
+```
+
+4. Volte no Android Studio.
+5. Clique no play verde.
+
+Se o Terminal disser que `adb` nao existe, use o Android Studio para desinstalar pelo icone do app no emulador. E mais simples.
+
+### Problemas comuns no Mac
+
+#### O Android Studio esta demorando muito
+
+Na primeira vez e normal. Ele baixa Gradle, Kotlin, SDK, emulator e dependencias.
+
+Espere terminar a sincronizacao.
+
+#### Apareceu erro de SDK
+
+Abra:
+
+```text
+Android Studio > Settings/Preferences > Languages & Frameworks > Android SDK
+```
+
+Confirme se existe um SDK instalado.
+
+#### Nao aparece nenhum emulador
+
+Abra:
+
+```text
+Tools > Device Manager
+```
+
+Crie um dispositivo virtual.
+
+#### O app nao abriu, mas instalou
+
+No emulador, procure pelo app:
+
+```text
+AgendaPro Beauty
+```
+
+Toque no icone.
+
+#### Quero rodar sem Android Studio pelo Terminal do Mac
+
+Depois que o Android Studio ja instalou o SDK, voce pode rodar:
+
+```bash
+cd ~/Downloads/Honeypot
+./gradlew :app:assembleDebug
+```
+
+O APK sera gerado em:
+
+```text
+app/build/outputs/apk/debug/app-debug.apk
+```
+
+Para instalar pelo Terminal, o emulador precisa estar aberto:
+
+```bash
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb shell monkey -p com.agendaprobeauty.app -c android.intent.category.LAUNCHER 1
 ```
 
 ## Testar no Emulador
